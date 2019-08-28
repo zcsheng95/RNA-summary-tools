@@ -75,7 +75,8 @@ options(width=60)
 set.seed(123)
 @ 
 
-
+\section*{Process HTSeq count files from STAR}
+\cite{deseq2}
 \section*{Session Information}
 
 <<sessioninfo,results="asis", echo=FALSE>>=

@@ -2,7 +2,7 @@
 #include <RcppEigen.h>
 // [[Rcpp::depends(RcppEigen)]]
 
-//' myLSrcpp
+//' myrcpp
 //' The function illustrates how to use RcppEigen to fit the model
 //' Y = X beta + epsilon
 //' What is returned is the vector betahat=LSE(beta)
@@ -12,7 +12,7 @@
 //' @return \code{betahat}
 //' @export
 // [[Rcpp::export]]
-Eigen::VectorXd myLSrcpp(const Eigen::VectorXd Y, const Eigen::MatrixXd X) {
+Eigen::VectorXd myrcpp(const Eigen::VectorXd Y, const Eigen::MatrixXd X) {
 
   /* This function returns the LSE vector */
 

@@ -2,14 +2,12 @@ Package: dcibioinformatics
 Title: Duke Cancer Institute (DCI) R Package
 Version: 0.1
 Authors@R: person("Kouros", "Owzar", email = "kouros.owzar@duke.edu", role = c("aut", "cre"))
-Description: This package consists of a number of utility functions developed
-and maintained by the Duke Cancer Institute (DCI) Bioinformatics Group
-to facilitate reproducible bioinformatics analyses.
+Description: This package consists of a number of utility functions developed and maintained by the Duke Cancer Institute (DCI) Bioinformatics Group to facilitate reproducible bioinformatics analyses.
 Depends: R (>= 3.6.1)
 License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: Rcpp (>= 1.0.1), xtable (>= 1.8-4)
+Imports: Rcpp (>= 1.0.1)
 LinkingTo: Rcpp, RcppEigen
 Suggests: knitr
 VignetteBuilder: knitr
