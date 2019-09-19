@@ -1,0 +1,23 @@
+---
+title: "DCI Bioinformatics tools: Summary statistics used for QC automatic report"
+author: "Zhecheng Sheng"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{myVignettes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = FALSE
+)
+```
+
+This documentation demonstrates the utility tools included in this package for generating automatic QC reports. Generally it takes data from STAR output and Picard output. If you want to report any issues using that package, please contact zhecheng.sheng\@duke.edu.
+
+## Introduction
+This is the package consists of a number of utility functions developed and maintained by the Duke Cancer Institute (DCI) Bioinformatics Group to facilitate reproducible bioinformatics analyses.
