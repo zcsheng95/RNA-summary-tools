@@ -2,3 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
+/dcibioinformatics.Rcheck/*
+*.Rproj
+*.tar.gz

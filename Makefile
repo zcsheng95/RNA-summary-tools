@@ -1,11 +1,11 @@
 mypkg=dcibioinformatics
-mypkgver=0.1
+mypkgver=0.2
 mypkggz=${mypkg}_${mypkgver}.tar.gz
 
 all: pkg check
 
 pkg:
-	Rscript -e "Rcpp::compileAttributes(pkg = '${mypkg}')"
+	# Rscript -e "Rcpp::compileAttributes(pkg = '${mypkg}')"
 	Rscript -e "devtools::document(pkg = '${mypkg}')"
 
 check:
