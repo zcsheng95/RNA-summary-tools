@@ -1,0 +1,133 @@
+* using log directory ‘/home/zs68/dcibioinformatics/dcibioinformatics.Rcheck’
+* using R version 3.6.1 (2019-07-05)
+* using platform: x86_64-pc-linux-gnu (64-bit)
+* using session charset: UTF-8
+* checking for file ‘dcibioinformatics/DESCRIPTION’ ... OK
+* this is package ‘dcibioinformatics’ version ‘0.1’
+* package encoding: UTF-8
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... OK
+* checking for portable file names ... OK
+* checking for sufficient/correct file permissions ... OK
+* checking whether package ‘dcibioinformatics’ can be installed ... OK
+* checking installed package size ... OK
+* checking package directory ... OK
+* checking DESCRIPTION meta-information ... OK
+* checking top-level files ... OK
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... OK
+* checking R files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking loading without being on the library search path ... OK
+* checking dependencies in R code ... WARNING
+'::' or ':::' imports not declared from:
+  ‘dplyr’ ‘magrittr’ ‘readr’
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... NOTE
+countCombine: no visible global function definition for ‘full_join’
+getPIcounts: no visible global function definition for ‘%do%’
+getPIcounts: no visible global function definition for ‘foreach’
+getPIcounts: no visible binding for global variable ‘pidfile’
+getPIcounts: no visible global function definition for ‘%>%’
+getPIcounts: no visible global function definition for ‘cols’
+getPIcounts: no visible binding for global variable ‘PF_BASES’
+getPIcounts: no visible binding for global variable ‘CODING_BASES’
+getPIcounts: no visible binding for global variable ‘UTR_BASES’
+getPIcounts: no visible binding for global variable ‘INTRONIC_BASES’
+getPIcounts: no visible binding for global variable ‘INTERGENIC_BASES’
+getPIcounts: no visible binding for global variable ‘RIBOSOMAL_BASES’
+getPIcounts: no visible binding for global variable ‘Coding+UTR’
+getPIcounts: no visible binding for global variable ‘Intronic’
+getPIcounts: no visible binding for global variable ‘Intergenic’
+getPIcounts: no visible binding for global variable ‘Ribosomal’
+getSTARcounts: no visible global function definition for
+  ‘col_character’
+getSTARcounts: no visible global function definition for ‘col_integer’
+getSTARcounts: no visible global function definition for ‘%do%’
+getSTARcounts: no visible global function definition for ‘foreach’
+getSTARcounts: no visible binding for global variable ‘stardir’
+getSTARcounts: no visible global function definition for ‘%>%’
+getSTARcounts: no visible global function definition for ‘vars’
+getSTARcounts: no visible binding for global variable ‘.’
+getSTARcounts: no visible global function definition for
+  ‘column_to_rownames’
+getSTARsum: no visible global function definition for ‘col_character’
+getSTARsum: no visible global function definition for ‘%do%’
+getSTARsum: no visible global function definition for ‘foreach’
+getSTARsum: no visible binding for global variable ‘stardir’
+getSTARsum: no visible global function definition for ‘%>%’
+getSTARsum: no visible global function definition for ‘vars’
+getSTARsum: no visible binding for global variable ‘.’
+logCombine: no visible global function definition for ‘full_join’
+plotAlignment: no visible global function definition for ‘%>%’
+plotAlignment: no visible global function definition for
+  ‘rownames_to_column’
+plotAlignment: no visible global function definition for ‘melt’
+plotAlignment: no visible binding for global variable ‘.’
+plotAlignment: no visible global function definition for ‘mutate’
+plotAlignment: no visible binding for global variable ‘variable’
+plotAlignment: no visible binding for global variable ‘value’
+plotAlignment: no visible binding for global variable ‘sid’
+plotAlignment: no visible global function definition for ‘ggplot’
+plotAlignment: no visible global function definition for ‘aes_string’
+plotAlignment: no visible global function definition for
+  ‘scale_x_discrete’
+plotAlignment: no visible global function definition for ‘theme’
+plotAlignment: no visible global function definition for ‘element_text’
+plotAlignment: no visible global function definition for ‘geom_bar’
+plotAlignment: no visible global function definition for
+  ‘scale_fill_manual’
+plotAlignment: no visible global function definition for ‘labs’
+plotAlignment: no visible global function definition for ‘geom_text’
+plotAlignment: no visible global function definition for ‘aes’
+plotAlignment: no visible global function definition for
+  ‘position_stack’
+printab: no visible global function definition for ‘xtable’
+sanitize_text: no visible binding for global variable ‘x’
+Undefined global functions or variables:
+  %>% %do% . CODING_BASES Coding+UTR INTERGENIC_BASES INTRONIC_BASES
+  Intergenic Intronic PF_BASES RIBOSOMAL_BASES Ribosomal UTR_BASES aes
+  aes_string col_character col_integer cols column_to_rownames
+  element_text foreach full_join geom_bar geom_text ggplot labs melt
+  mutate pidfile position_stack rownames_to_column scale_fill_manual
+  scale_x_discrete sid stardir theme value variable vars x xtable
+* checking Rd files ... OK
+* checking Rd metadata ... OK
+* checking Rd cross-references ... OK
+* checking for missing documentation entries ... OK
+* checking for code/documentation mismatches ... OK
+* checking Rd \usage sections ... WARNING
+Undocumented arguments in documentation object 'plotAlignment'
+  ‘...’
+
+Undocumented arguments in documentation object 'printab'
+  ‘...’
+
+Functions with \usage entries need to have the appropriate \alias
+entries, and all their arguments documented.
+The \usage entries must correspond to syntactically valid R code.
+See chapter ‘Writing R documentation files’ in the ‘Writing R
+Extensions’ manual.
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+* checking line endings in C/C++/Fortran sources/headers ... OK
+* checking compiled code ... OK
+* checking examples ... NONE
+* checking PDF version of manual ... WARNING
+LaTeX errors when creating PDF version.
+This typically indicates Rd problems.
+* checking PDF version of manual without hyperrefs or index ... ERROR
+* DONE
+Status: 1 ERROR, 3 WARNINGs, 1 NOTE

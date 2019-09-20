@@ -13,11 +13,64 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  echo = FALSE
+  echo = FALSE,
+  results = "asis",
+  fig.show = "hold",
+  fig.width = 10,
+  fig.height = 5,
+  fig.align = 'center'
 )
 ```
 
 This documentation demonstrates the utility tools included in this package for generating automatic QC reports. Generally it takes data from STAR output and Picard output. If you want to report any issues using that package, please contact zhecheng.sheng\@duke.edu.
 
 ## Introduction
-This is the package consists of a number of utility functions developed and maintained by the Duke Cancer Institute (DCI) Bioinformatics Group to facilitate reproducible bioinformatics analyses.
+
+
+This is the package consists of a number of utility functions developed and maintained by the Duke Cancer Institute (DCI) Bioinformatics Group to facilitate reproducible bioinformatics analyses. This package includes two sample gene folders, storing the output for STAR run and Picard run, be aware that your directory structure may be different from this two sample files. Also because of that, it may take a while to build the vignette.
+
+
+## Workflow Using Example Data
+```{r setup}
+library(dcibioinformatics)
+```
+
+### Tables output
+
+* **Summary of STAR run**
+
+```{r star summary, echo=TRUE}
+rootdir <- dirname(system.file("extdata","Rh28-Ctrl-HA-FLAG-1_S1/",package = "dcibioinformatics",mustWork = TRUE))
+starsumm <- getSTARsum(rootdir = rootdir)
+knitr::kable(starsumm[1:10,],align = 'c',caption = 'STAR Alignment Summary')
+```
+
+* **Summary of STAR Counts**
+
+```{r star counts,echo = TRUE}
+starcounts <- getSTARcounts(rootdir = rootdir, strand = "second")
+knitr::kable(starcounts[1:10,],align = 'c',caption = 'STAR Counts Summary')
+```
+
+* **Summary of Picard Counts**
+```{r picard counts, echo = TRUE}
+picounts <- getPIcounts(rootdir = rootdir)
+knitr::kable(picounts,align = 'c',caption = 'Picard Counts Summary')
+
+```
+
+### Figures output
+
+* **Counting Reads(STAR)**
+
+```{r counting reads bar plot, echo=TRUE}
+plotAlignment(starcounts,type = "HTSeq",textsize = 3)
+```
+
+* **Counting Bases(Picard)**
+
+```{r counting bases bar plot, echo = TRUE}
+plotAlignment(picounts,type = "Picard",textsize = 2)
+
+```
+

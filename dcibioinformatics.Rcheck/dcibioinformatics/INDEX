@@ -1,0 +1,34 @@
+countCombine            countCombine It combines count columns of
+                        different samples
+dcibioinformatics       dcibinformatics.
+getPIcounts             getPIcounts Extract counting bases summary from
+                        PICARD output
+getSTARcounts           getSTARcounts Extract strand-specific STAR
+                        counts for each sample and then merge all
+                        counts into a single table
+getSTARsum              getSTARsum Produce a summary table for STAR
+                        alignment process
+logCombine              logCombine It combines log columns of different
+                        samples
+myPidfile               myPidfile get picard '.metrics' files from root
+                        directory
+myrcpp                  myrcpp The function illustrates how to use
+                        RcppEigen to fit the model Y = X beta + epsilon
+                        What is returned is the vector
+                        betahat=LSE(beta)
+mystarLogfile           mystarLogfile Generates the full path to a STAR
+                        log file. It assume that the log file is of the
+                        form rootdir/stardir/suffix
+mystarfile              mystarfile Generates the full path to a STAR
+                        count file. It assume that the count file is of
+                        the form rootdir/stardir/suffix
+picardCombine           picardCombine Row bind of picard summary for
+                        df1 and df2
+plotAlignment           plotAlignment Plot stacked barplot for bases
+                        counting proportion for STAR and PICARD
+printab                 printab Print summary table in LaTex format
+sanitize_text           sanitize_text Sanitize LaTex table output from
+                        xtable
+sumHTSeq                sumHTSeq Helper function that makes adjustments
+                        to output from getSTARcounts to be ready for
+                        plotting

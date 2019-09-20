@@ -1,0 +1,16 @@
+dcibioinformatics-package	dcibioinformatics
+countCombine	countCombine
+dcibioinformatics	dcibioinformatics
+getPIcounts	getPIcounts
+getSTARcounts	getSTARcounts
+getSTARsum	getSTARsum
+logCombine	logCombine
+myPidfile	myPidfile
+myrcpp	myrcpp
+mystarfile	mystarfile
+mystarLogfile	mystarLogfile
+picardCombine	picardCombine
+plotAlignment	plotAlignment
+printab	printab
+sanitize_text	sanitize_text
+sumHTSeq	sumHTSeq
