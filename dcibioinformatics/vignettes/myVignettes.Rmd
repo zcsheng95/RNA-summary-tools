@@ -74,3 +74,6 @@ plotAlignment(picounts,type = "Picard",textsize = 2)
 
 ```
 
+### Reference
+
+- !! Use public dataset instead and cite here

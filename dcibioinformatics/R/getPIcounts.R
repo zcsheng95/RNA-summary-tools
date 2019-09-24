@@ -48,6 +48,7 @@ getPIcounts <- function(rootdir) {
                   Intergenic = INTERGENIC_BASES, 
                   Ribosomal = RIBOSOMAL_BASES,
                   Unaligned = PF_BASES - `Coding+UTR` - Intronic - Intergenic - Ribosomal)%>%
+        as.data.frame()%>%
         magrittr::set_rownames(gene)
   }
   out[, 2:6] <- round(prop.table(out[, 2:6]) * 100, 2)
