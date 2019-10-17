@@ -3,9 +3,9 @@
 #' countCombine
 #' It combines count columns of different samples
 #' @import dplyr
-#'@param df1 The strand-specific star counts for sample 1
-#'@param df2 The strand-specific star counts for sample 2
-#'@return The joint df from df1 and df2
+#' @param df1 The strand-specific star counts for sample 1
+#' @param df2 The strand-specific star counts for sample 2
+#' @return The joint df from df1 and df2
 
 countCombine <- function(df1, df2) {
     dplyr::full_join(df1, df2, by="gene")
@@ -77,16 +77,3 @@ getSTARcounts <- function(rootdir,strand) {
     return(out)
 }
 
-
-#' #' 
-#' #' The function illustrates how to use the myLS Rcpp function
-#' #' from this package from within an R function to fit the model
-#' #' Y = X beta + epsilon 
-#' #' What is returned is the vector betahat=LSE(beta)
-#' #' @param Y the vector of response
-#' #' @param X the matrix of covariates (does not include intercept)
-#' #' @return \code{betahat}
-#' getSTARcounts <- function(Y, X) {
-#'     betahat <- myLSrcpp(Y, X)
-#'     return(betahat)
-#' }

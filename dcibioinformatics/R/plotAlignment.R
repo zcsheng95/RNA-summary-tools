@@ -21,7 +21,7 @@ sumHTSeq <- function(counts){
 }
 
 
-# Export Function ----------------------------------------------------------------------------
+# export ----------------------------------------------------------------------------
 
 utils::globalVariables(c("variable",".","value","sid"))
 
@@ -42,19 +42,19 @@ utils::globalVariables(c("variable",".","value","sid"))
 
 plotAlignment <- function(counts, type, textsize = 3,...){
   if(type == "HTSeq"){
-      summtable <- sumHTSeq(counts)
-      plotdata <- summtable %>%
-        rownames_to_column(var = "sid") %>%
-        melt(measure.vars = grep("Prop_", colnames(.), value = T)) %>%
-        mutate(variable = factor(variable, 
+    summtable <- sumHTSeq(counts)
+    plotdata <- summtable %>%
+      rownames_to_column(var = "sid") %>%
+      melt(measure.vars = grep("Prop_", colnames(.), value = T)) %>%
+      mutate(variable = factor(variable, 
                                levels = unique(variable),
                                labels = c("Gene", 
                                           "Ambiguous", 
                                           "No Feature", 
                                           "Multimapping", 
                                           "Unmapped")),
-              value = as.numeric(value),
-              sid = sid)
+             value = as.numeric(value),
+             sid = sid)
     
     
     colors.alignment <- c("Gene" = "#0571B0", 
@@ -73,13 +73,13 @@ plotAlignment <- function(counts, type, textsize = 3,...){
                 position = position_stack(vjust = 0.5),size = textsize,...)
   }
   else if(type == "Picard"){
-   
-     plotdata <- counts %>%
+    
+    plotdata <- counts %>%
       rownames_to_column(var = "sid") %>%
       melt(id.vars = c("sid","Total Bases")) %>%
       mutate(value = as.numeric(value))
     
-      colors.alignment <- c("Coding+UTR" = "#E1FFFF",
+    colors.alignment <- c("Coding+UTR" = "#E1FFFF",
                           "Intronic" = "#FFF8DD",
                           "Intergenic" = "#FEE4E1", 
                           "Ribosomal" = "#9df19d",
