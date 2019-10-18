@@ -5,8 +5,8 @@
 \alias{RNAqc-class}
 \alias{.RNAqc}
 \title{Create new RNAqc class
-Inherit directly from SummarizedExperiment class}
+Inherit directly from DESeqDataSet class}
 \description{
 Create new RNAqc class
-Inherit directly from SummarizedExperiment class
+Inherit directly from DESeqDataSet class
 }

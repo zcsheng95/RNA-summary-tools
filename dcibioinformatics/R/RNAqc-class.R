@@ -1,20 +1,22 @@
 # --RNAqc--
 #' Create new RNAqc class
-#' Inherit directly from SummarizedExperiment class 
+#' Inherit directly from DESeqDataSet class 
 #' @export
 #' @import methods
-#' @importClassesFrom SummarizedExperiment SummarizedExperiment
+#' @importClassesFrom DESeq2 DESeqDataSet
 
 .RNAqc <- setClass("RNAqc",
-         slots  = representation(
-           picard = "DataFrame"
-           ),
-         contains = "SummarizedExperiment",
-         prototype = prototype(assays = Assays(SimpleList(counts=matrix(0))),
-                               colData = DataFrame(0)))
+                   slots  = representation(
+                     picard = "DataFrame",
+                     Nmap = "matrix"
+                   ),
+                   contains = "DESeqDataSet",
+                   prototype = prototype(assays = Assays(SimpleList(counts=matrix(0))),
+                                         colData = DataFrame(0)))
 
 #'@export
 #'@importFrom SummarizedExperiment SummarizedExperiment
+#'@importFrom DESeq2 DESeqDataSet
 #'
 
 RNAqc <- function(counts,colData,picard = DataFrame(),...){
@@ -27,9 +29,12 @@ RNAqc <- function(counts,colData,picard = DataFrame(),...){
   if(!is(counts,"matrix")){
     counts = as(counts, "matrix")
   }
-  se <- SummarizedExperiment(assays = list(counts = counts),colData = colData,...)
-  .RNAqc(se,picard = picard)
-  }
+  Nmapp = counts[1:4,]
+  rcounts = counts[-1:-4,]
+  se <- SummarizedExperiment(assays = list(counts = rcounts),colData = colData,...)
+  dds <- DESeqDataSet(se, design = ~1)
+  .RNAqc(dds,picard = picard,Nmap = Nmapp)
+}
 
 
 .valid.RNAqc <- function(object){
@@ -45,6 +50,12 @@ RNAqc <- function(counts,colData,picard = DataFrame(),...){
   
   if (!is(colData(object),"DataFrame")){
     msg <- c(msg, "colData must be a DataFrame")
+  }
+  if(!is(piData(object),"DataFrame")){
+    msg <- c(msg, "picard must be a DataFrame")
+  }
+  if(min(Nmap(object) <0)){
+    msg <- c(msg, "Mapping statistics can not be negative")
   }
   if (is.null(msg)) {
     TRUE
@@ -64,11 +75,18 @@ setMethod("piData",signature = "RNAqc", function(object){
   return(out)
 })
 
+#' @export
+setGeneric("Nmap", function(object,...)standardGeneric("Nmap"))
 
+#' @export
+setMethod("Nmap", signature = "RNAqc", function(object){
+  out <- object@Nmap
+  return(out)
+})
 #-- Modify show methods
 
 #' @export
-#' @importMethodsFrom methods SummarizedExperiment
+#' @importMethodsFrom SummarizedExperiment show
 #'
 #'
 setMethod("show", signature = "RNAqc", function(object){
@@ -87,6 +105,18 @@ setGeneric("piData<-", function(object,...,value)standardGeneric("piData<-"))
 #'
 setReplaceMethod("piData","RNAqc",function(object,value){
   object@picard <- value
+  validObject(object)
+  return(object)
+})
+
+#' @export
+#' 
+setGeneric("Nmap<-", function(object,...,value)standardGeneric("Nmap<-"))
+
+#' @export
+#' 
+setReplaceMethod("Nmap","RNAqc", function(object,value){
+  object@Nmap <- value
   validObject(object)
   return(object)
 })
@@ -116,30 +146,30 @@ setMethod("[","RNAqc",function(x, i, j, drop = TRUE){
 #-- Subsetting Assignment
 #' @export
 setReplaceMethod("[", c("RNAqc", "ANY", "ANY", "RNAqc"),function(x, i, j, ..., value) {
-    picard <- piData(x)
-    if (!missing(j)) {
-        if (is.character(j)) {
-            fmt <- paste0("<", class(x), ">[,j] index out of bounds: %s")
-            j <- SummarizedExperiment:::.SummarizedExperiment.charbound(
-            j, colnames(x), fmt
-                       )
-            }
-        j <- as.vector(j)
-        picard[j,] <- piData(value)
-      }
-    out <- callNextMethod()
-    BiocGenerics:::replaceSlots(out, picard = picard, check=FALSE)
-  })
+  picard <- piData(x)
+  if (!missing(j)) {
+    if (is.character(j)) {
+      fmt <- paste0("<", class(x), ">[,j] index out of bounds: %s")
+      j <- SummarizedExperiment:::.SummarizedExperiment.charbound(
+        j, colnames(x), fmt
+      )
+    }
+    j <- as.vector(j)
+    picard[j,] <- piData(value)
+  }
+  out <- callNextMethod()
+  BiocGenerics:::replaceSlots(out, picard = picard, check=FALSE)
+})
 
 
 
 #-- Define Coerce
-#' @exportMethods coerce
+#' @exportMethod coerce
 
-setAs("SummarizedExperiment", "RNAqc", function(from) {
+setAs("DESeqDataSet", "RNAqc", function(from) {
   new("RNAqc", from, 
       picard=DataFrame(row.names = colnames(from)), 
-      )
+  )
 })
 
 # which works as expected:

@@ -1,15 +1,15 @@
-# Helper Function---------------------------------------------------------------------
-#' sumHTSeq
+# Summarize STAR output---------------------------------------------------------------------
+#' summary.RNAqc
 #' Helper function that makes adjustments to output from getSTARcounts to be ready for plotting
-#' @param counts Counts table from STAR alignment
+#' @param object An RNAqc instance
 #' @return A dataframe ready for plotting
 #' 
-
-
-sumHTSeq <- function(counts){
+#' 
+summary.RNAqc <- function(object){
+  counts <- assay(object)
   sid <- as.character(colnames(counts))
-  tmp <- data.frame(t(counts[1:4, sid]),
-                    N_gene = colSums(counts[-1:-4, sid]))[, 5:1]
+  tmp <- data.frame(t(Nmap(object)[, sid]),
+                    N_gene = colSums(counts[, sid]))[, 5:1]
   colnames(tmp) <- gsub("N_", "Prop_", colnames(tmp))
   cols2 <- data.frame(Depth = formatC(rowSums(tmp), 
                                       format = "d", 
@@ -21,17 +21,21 @@ sumHTSeq <- function(counts){
 }
 
 
-# export ----------------------------------------------------------------------------
+setMethod("summary","RNAqc",function(object){
+  summary.RNAqc(object)
+})
 
-utils::globalVariables(c("variable",".","value","sid"))
+# export ----------------------------------------------------------------------------
+### Define global variables to avoid warnings in R CMD Check
+utils::globalVariables(c("object","variable",".","value","sid"))
 
 #' plotAlignment
 #' Plot stacked barplot for bases counting proportion for STAR and PICARD
 #' @import ggplot2
 #' @import dplyr
-#' @import reshape2
+#' @import tidyr
 #' @import tibble
-#' @param counts Summary counts table from getSTARcounts or getPIcounts
+#' @param object A RNAqc instance
 #' @param type Counting reads or counting bases, select one from \code{c("HTSeq","Picard")}
 #' @param textsize Annotation size on the plot
 #' @param ... Other visual options used for geom_text
@@ -40,43 +44,43 @@ utils::globalVariables(c("variable",".","value","sid"))
 #' 
 
 
-plotAlignment <- function(counts, type, textsize = 3,...){
-  if(type == "HTSeq"){
-    summtable <- sumHTSeq(counts)
-    plotdata <- summtable %>%
-      rownames_to_column(var = "sid") %>%
-      melt(measure.vars = grep("Prop_", colnames(.), value = T)) %>%
-      mutate(variable = factor(variable, 
-                               levels = unique(variable),
-                               labels = c("Gene", 
-                                          "Ambiguous", 
-                                          "No Feature", 
-                                          "Multimapping", 
-                                          "Unmapped")),
-             value = as.numeric(value),
-             sid = sid)
-    
-    
-    colors.alignment <- c("Gene" = "#0571B0", 
-                          "Ambiguous" = "#92C5DE",
-                          "No Feature" = "#F7F7F7", 
-                          "Multimapping" = "#F4A582",
-                          "Unmapped" = "#CA0020")
-    
-    ggplot2::ggplot(plotdata, aes_string(x = "sid", y = "value", fill = "variable")) +
-      scale_x_discrete(limits = unique(plotdata$sid)) + 
-      theme(axis.text.x=element_text(angle=60, hjust=1))+
-      geom_bar(stat="identity", color = "black", size =0.3) + 
-      scale_fill_manual(values=colors.alignment) +
-      labs(y = "Percentage", x = "Sample", fill = "Type") +
-      geom_text(aes(label = paste0(value,"%")), 
-                position = position_stack(vjust = 0.5),size = textsize,...)
-  }
-  else if(type == "Picard"){
-    
+plotAlignment <- function(object, group, textsize = 3,...){
+  summtable <- summary(object)
+  plotdata <- summtable %>%
+    rownames_to_column(var = "sid") %>%
+    tidyr::gather(variable, value,-Depth,-sid) %>%
+    mutate(variable = factor(variable, 
+                             levels = unique(variable),
+                             labels = c("Gene", 
+                                        "Ambiguous", 
+                                        "No Feature", 
+                                        "Multimapping", 
+                                        "Unmapped")),
+           value = as.numeric(value),
+           sid = sid)
+  
+  
+  colors.alignment <- c("Gene" = "#0571B0", 
+                        "Ambiguous" = "#92C5DE",
+                        "No Feature" = "#F7F7F7", 
+                        "Multimapping" = "#F4A582",
+                        "Unmapped" = "#CA0020")
+  g_star <- ggplot2::ggplot(plotdata, aes_string(x = "sid", y = "value", fill = "variable")) +
+    scale_x_discrete(limits = unique(plotdata$sid)) + 
+    theme(axis.text.x=element_text(angle=60, hjust=1))+
+    geom_bar(stat="identity", color = "black", size =0.3) + 
+    scale_fill_manual(values=colors.alignment) +
+    labs(y = "Percentage", x = "Sample", fill = "Type") +
+    geom_text(aes(label = paste0(value,"%")),  
+              position = position_stack(vjust = 0.5),size = textsize,...)+
+    theme_classic()
+  
+  if(!identical(piData(object),DataFrame(0))){
+    counts <- piData(object)
     plotdata <- counts %>%
+      as.data.frame() %>%
       rownames_to_column(var = "sid") %>%
-      melt(id.vars = c("sid","Total Bases")) %>%
+      tidyr::gather(variable,value, -sid, -Total.Bases) %>%
       mutate(value = as.numeric(value))
     
     colors.alignment <- c("Coding+UTR" = "#E1FFFF",
@@ -84,13 +88,34 @@ plotAlignment <- function(counts, type, textsize = 3,...){
                           "Intergenic" = "#FEE4E1", 
                           "Ribosomal" = "#9df19d",
                           "Unaligned" = "#E6E6F9")
-    ggplot(plotdata, aes_string(x = "sid", y = "value", fill = "variable")) +
+    g_pi<-ggplot(plotdata, aes_string(x = "sid", y = "value", fill = "variable")) +
       scale_x_discrete(limits = unique(plotdata$sid)) + 
       theme(axis.text.x=element_text(angle=60, hjust=1))+
       geom_bar(stat="identity", color = "black", size =0.3) + 
       scale_fill_manual(values=colors.alignment) +
       labs(y = "Percentage", x = "Sample", fill = "Type") +
       geom_text(aes(label = paste0(value,"%")), 
-                position = position_stack(vjust = 0.5),size=textsize,...)
+                position = position_stack(vjust = 0.5),size=textsize,...)+
+      theme_classic()
   }
+  
+  plot_dat <- summtable %>% 
+    rownames_to_column(var = "sid") %>%
+    dplyr::mutate(unimap = Prop_gene + Prop_ambiguous+ Prop_noFeature)
+  
+  g_map <- ggplot(plot_dat, aes_string(x = "sid", y = "unimap",color = as.factor(colData(object)[[group]])))+
+    geom_point(size = 4) +
+    labs(x = "Samples", y = "Unique Mapping Rate",color = group) +
+    theme_classic() +
+    theme(axis.text=element_text(size=10),
+          axis.title=element_text(size=12, face="bold"),
+          plot.title=element_text(face="italic"),
+          axis.text.x=element_text(angle=60, hjust=1))
+  return(list(g_star,g_pi,g_map)) 
 }
+
+
+
+setMethod("plot",
+          signature = signature(x = "RNAqc",y = "missing"),
+          definition =function(x,y,...)plotAlignment(x,...))

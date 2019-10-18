@@ -29,7 +29,7 @@ utils::globalVariables(c("pidfile","PF_BASES","CODING_BASES","UTR_BASES","INTRON
 #' getPIcounts
 #' Extract counting bases summary from PICARD output
 #' @import dplyr
-#' @import magrittr
+#' @importFrom magrittr set_rownames
 #' @param rootdir Directory that stores all picard \code{.metrics} file
 #' @return joint table for counting bases from PICARD output
 #' @export

@@ -5,16 +5,16 @@
 \title{plotAlignment
 Plot stacked barplot for bases counting proportion for STAR and PICARD}
 \usage{
-plotAlignment(counts, type, textsize = 3, ...)
+plotAlignment(object, group, textsize = 3, ...)
 }
 \arguments{
-\item{counts}{Summary counts table from getSTARcounts or getPIcounts}
-
-\item{type}{Counting reads or counting bases, select one from \code{c("HTSeq","Picard")}}
+\item{object}{A RNAqc instance}
 
 \item{textsize}{Annotation size on the plot}
 
 \item{...}{Other visual options used for geom_text}
+
+\item{type}{Counting reads or counting bases, select one from \code{c("HTSeq","Picard")}}
 }
 \value{
 A ggplot type plot
