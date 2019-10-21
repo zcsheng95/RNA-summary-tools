@@ -3,10 +3,6 @@
 #' Inherit directly from DESeqDataSet class 
 #' @export
 #' @import methods
-#' @import SummarizedExperiment
-#' @importFrom S4Vectors SimpleList
-#' @importFrom S4Vectors DataFrame
-#' @importFrom S4Vectors setValidity2
 #' @importClassesFrom DESeq2 DESeqDataSet
 
 .RNAqc <- setClass("RNAqc",
