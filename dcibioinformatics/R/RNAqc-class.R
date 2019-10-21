@@ -3,6 +3,10 @@
 #' Inherit directly from DESeqDataSet class 
 #' @export
 #' @import methods
+#' @import SummarizedExperiment
+#' @importFrom S4Vectors SimpleList
+#' @importFrom S4Vectors DataFrame
+#' @importFrom S4Vectors setValidity2
 #' @importClassesFrom DESeq2 DESeqDataSet
 
 .RNAqc <- setClass("RNAqc",
@@ -174,7 +178,7 @@ setAs("DESeqDataSet", "RNAqc", function(from) {
 
 # which works as expected:
 # se <- SummarizedExperiment(matrix(rpois(100, lambda=1), ncol=5))
-# as(se, "QNAqc")
+# as(se, "RNAqc")
 
 
 

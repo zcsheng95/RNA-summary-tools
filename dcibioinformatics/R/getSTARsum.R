@@ -23,7 +23,7 @@ logCombine <- function(df1, df2) {
 #' @param suffix Suffix used by STAR to identify log file
 #' @return Full path to the STAR log file
 mystarLogfile <- function(rootdir, stardir, suffix = "Log.final.out") {
-  file.path(rootdir, stardir, paste(stardir, suffix, sep=""))
+  file.path(rootdir, stardir, suffix)
 }
 
 

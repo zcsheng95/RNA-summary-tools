@@ -39,7 +39,7 @@ library(dcibioinformatics)
 
 * **Summary of STAR run**
 
-```{r star summary, echo=TRUE}
+```{r star summary, echo=TRUE,eval=F}
 rootdir <- dirname(system.file("extdata","Rh28-Ctrl-HA-FLAG-1_S1/",package = "dcibioinformatics",mustWork = TRUE))
 starsumm <- getSTARsum(rootdir = rootdir)
 knitr::kable(starsumm[1:10,],align = 'c',caption = 'STAR Alignment Summary')
@@ -47,13 +47,13 @@ knitr::kable(starsumm[1:10,],align = 'c',caption = 'STAR Alignment Summary')
 
 * **Summary of STAR Counts**
 
-```{r star counts,echo = TRUE}
+```{r star counts,echo = TRUE,eval=F}
 starcounts <- getSTARcounts(rootdir = rootdir, strand = "second")
 knitr::kable(starcounts[1:10,],align = 'c',caption = 'STAR Counts Summary')
 ```
 
 * **Summary of Picard Counts**
-```{r picard counts, echo = TRUE}
+```{r picard counts, echo = TRUE, eval=F}
 picounts <- getPIcounts(rootdir = rootdir)
 knitr::kable(picounts,align = 'c',caption = 'Picard Counts Summary')
 
@@ -63,13 +63,13 @@ knitr::kable(picounts,align = 'c',caption = 'Picard Counts Summary')
 
 * **Counting Reads(STAR)**
 
-```{r counting reads bar plot, echo=TRUE}
+```{r counting reads bar plot, echo=TRUE, eval = FALSE}
 plotAlignment(starcounts,type = "HTSeq",textsize = 3)
 ```
 
 * **Counting Bases(Picard)**
 
-```{r counting bases bar plot, echo = TRUE}
+```{r counting bases bar plot, echo = TRUE, eval = FALSE}
 plotAlignment(picounts,type = "Picard",textsize = 2)
 
 ```

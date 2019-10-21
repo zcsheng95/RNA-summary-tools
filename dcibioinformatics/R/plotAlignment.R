@@ -110,7 +110,7 @@ plotAlignment <- function(object, group, textsize = 3,...){
     theme(axis.text=element_text(size=10),
           axis.title=element_text(size=12, face="bold"),
           plot.title=element_text(face="italic"),
-          axis.text.x=element_text(angle=60, hjust=1))
+          axis.text.x=element_text(hjust=1))
   return(list(g_star,g_pi,g_map)) 
 }
 

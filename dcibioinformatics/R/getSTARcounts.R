@@ -22,7 +22,7 @@ countCombine <- function(df1, df2) {
 #' @param suffix Suffix used by STAR to identify countfile
 #' @return Full path to the STAR count file
 mystarfile <- function(rootdir, stardir, suffix = "ReadsPerGene.out.tab") {
-    file.path(rootdir, stardir, paste(stardir, suffix, sep=""))
+    file.path(rootdir, stardir, suffix)
 }
 
 

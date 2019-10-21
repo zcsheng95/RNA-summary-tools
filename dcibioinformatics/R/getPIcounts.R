@@ -51,6 +51,6 @@ getPIcounts <- function(rootdir) {
         as.data.frame()%>%
         magrittr::set_rownames(gene)
   }
-  out[, 2:6] <- round(prop.table(out[, 2:6]) * 100, 2)
+  out[, 2:6] <- round(prop.table(as.matrix(picounts[,2:6]),margin = 1) * 100, 2)
   return(out)
-  }
+}
