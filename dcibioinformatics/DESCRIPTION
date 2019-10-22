@@ -6,7 +6,8 @@ Authors@R:
         person("Jeff", "Sheng", email = "zhecheng.sheng@duke.edu", role = c("aut","cre")))
 Maintainer: Jeff Sheng <zhecheng.sheng@duke.edu>
 Description: This package consists of a number of utility functions developed and maintained by the Duke Cancer Institute (DCI) Bioinformatics Group to facilitate reproducible bioinformatics analyses.
-Depends: R (>= 3.6.1)
+Depends: 
+    R (>= 3.6.1)
 License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -18,8 +19,7 @@ Imports:
     magrittr,
     readr,
     xtable,
-    tibble,
-    reshape2
+    tibble (>= 2.1.3)
 LinkingTo: Rcpp, RcppEigen
 Suggests: 
     knitr,

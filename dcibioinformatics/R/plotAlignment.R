@@ -5,6 +5,7 @@
 #' @return A dataframe ready for plotting
 #' 
 #' 
+
 summary.RNAqc <- function(object){
   counts <- assay(object)
   sid <- as.character(colnames(counts))
