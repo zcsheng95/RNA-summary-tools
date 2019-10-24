@@ -28,7 +28,8 @@ setMethod("summary","RNAqc",function(object){
 
 # export ----------------------------------------------------------------------------
 ### Define global variables to avoid warnings in R CMD Check
-utils::globalVariables(c("object","variable",".","value","sid"))
+utils::globalVariables(c("object","variable",".","value","sid","Depth","Total.Bases","Prop_gene","Prop_ambiguous",
+                         "Prop_noFeature"))
 
 #' plotAlignment
 #' Plot stacked barplot for bases counting proportion for STAR and PICARD
@@ -37,7 +38,7 @@ utils::globalVariables(c("object","variable",".","value","sid"))
 #' @import tidyr
 #' @import tibble
 #' @param object A RNAqc instance
-#' @param type Counting reads or counting bases, select one from \code{c("HTSeq","Picard")}
+#' @param group grouping variable
 #' @param textsize Annotation size on the plot
 #' @param ... Other visual options used for geom_text
 #' @return A ggplot type plot

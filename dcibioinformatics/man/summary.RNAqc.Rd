@@ -5,7 +5,7 @@
 \title{summary.RNAqc
 Helper function that makes adjustments to output from getSTARcounts to be ready for plotting}
 \usage{
-summary.RNAqc(object)
+\method{summary}{RNAqc}(object)
 }
 \arguments{
 \item{object}{An RNAqc instance}

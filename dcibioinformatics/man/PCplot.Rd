@@ -15,9 +15,15 @@ PCplot(df, vars, labels, pc, colors.group, labels.group.pca, shapes.group)
 \item{labels}{sample id}
 
 \item{pc}{principal components to compare}
+
+\item{colors.group}{costumized color}
+
+\item{labels.group.pca}{sample id}
+
+\item{shapes.group}{costumiozed shapes}
 }
 \value{
-
+ggplot type pca plot
 }
 \description{
 PCplot

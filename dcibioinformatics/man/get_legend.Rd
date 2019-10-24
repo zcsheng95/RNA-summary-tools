@@ -11,7 +11,7 @@ get_legend(gplot)
 \item{gplot}{ggplot type of plot}
 }
 \value{
-
+legend element of plot
 }
 \description{
 get_legend

@@ -13,13 +13,15 @@ get_legend<-function(gplot){
 
 
 
+
 #' starPCA
-#' Function for calculating PCA 
+#' Function for calculating PCA
+#' @importFrom DESeq2 counts vst
 #' @importFrom matrixStats rowVars
+#' @importFrom stats prcomp
 #' @param object an RNAqc object
 #' @param ntop use top genes to calculate PCA
-#' @param vars grouping variable
-#' @return
+#' @return dataframe ready for pca plot
 #'
 starPCA <- function(object,ntop = 1000){
   if(!all(colnames(object) == colnames(counts(object)))){stop("Sample names not in same order!")}
@@ -43,7 +45,10 @@ starPCA <- function(object,ntop = 1000){
 #' @param vars grouping variables
 #' @param labels sample id
 #' @param pc principal components to compare
-#' @return 
+#' @param colors.group costumized color
+#' @param labels.group.pca sample id
+#' @param shapes.group costumiozed shapes
+#' @return ggplot type pca plot
 #' 
 #' 
 
@@ -74,16 +79,17 @@ PCplot <- function(df, vars, labels, pc, colors.group, labels.group.pca, shapes.
   return(g)
 }
 
+
+
 #' createPCplot
 #' This function takes the meta data and star counts 
 #' use DESeq2 for estimating size factors before considering any experiment designs.
 #' It requires the column names of the input count data matrix and the row names of the metadata have the same order
 #' @import ggrepel RColorBrewer
 #' @importFrom gridExtra grid.arrange arrangeGrob
-#' @param cts star counts matrix
-#' @param coldata meta information
-#' @param vars grouping variables
-#' @param labels sample ids
+#' @param object an RNAqc object
+#' @param var grouping variables
+#' @param labels show the labels or not
 #' @return PCA plot for pc1 vs pc2, pc1 vs pc3, pc2 vs pc3
 #' @export
 

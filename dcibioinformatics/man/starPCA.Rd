@@ -11,11 +11,9 @@ starPCA(object, ntop = 1000)
 \item{object}{an RNAqc object}
 
 \item{ntop}{use top genes to calculate PCA}
-
-\item{vars}{grouping variable}
 }
 \value{
-
+dataframe ready for pca plot
 }
 \description{
 starPCA

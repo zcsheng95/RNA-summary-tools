@@ -10,13 +10,11 @@ It requires the column names of the input count data matrix and the row names of
 createPCplot(object, var, labels = FALSE)
 }
 \arguments{
-\item{labels}{sample ids}
+\item{object}{an RNAqc object}
 
-\item{cts}{star counts matrix}
+\item{var}{grouping variables}
 
-\item{coldata}{meta information}
-
-\item{vars}{grouping variables}
+\item{labels}{show the labels or not}
 }
 \value{
 PCA plot for pc1 vs pc2, pc1 vs pc3, pc2 vs pc3
