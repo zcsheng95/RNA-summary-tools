@@ -4,9 +4,16 @@
 \name{RNAqc-class}
 \alias{RNAqc-class}
 \alias{.RNAqc}
+\alias{RNAqc-constructor}
+\alias{RNAqc}
 \title{Create new RNAqc class
 Inherit directly from DESeqDataSet class}
+\usage{
+RNAqc(counts, colData, picard = DataFrame(), ...)
+}
 \description{
 Create new RNAqc class
 Inherit directly from DESeqDataSet class
+
+Constructor for RNAqc Class
 }

@@ -8,11 +8,11 @@ Maintainer: Jeff Sheng <zhecheng.sheng@duke.edu>
 Description: This package consists of a number of utility functions developed and maintained by the Duke Cancer Institute (DCI) Bioinformatics Group to facilitate reproducible bioinformatics analyses.
 Depends: 
     R (>= 3.6.1),
-    DESeq2
 License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: 
+Imports:
+    DESeq2,
     dplyr,
     ggplot2,
     foreach,

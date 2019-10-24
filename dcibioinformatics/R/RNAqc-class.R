@@ -8,6 +8,8 @@
 #' @importFrom S4Vectors DataFrame
 #' @importFrom S4Vectors setValidity2
 #' @importClassesFrom DESeq2 DESeqDataSet
+#' @rdname RNAqc-class
+#' @name RNAqc-class
 
 .RNAqc <- setClass("RNAqc",
                    slots  = representation(
@@ -17,11 +19,14 @@
                    contains = "DESeqDataSet",
                    prototype = prototype(assays = Assays(SimpleList(counts=matrix(0))),
                                          colData = DataFrame(0)))
-
+#' Constructor for RNAqc Class
+#' 
 #'@export
 #'@importFrom SummarizedExperiment SummarizedExperiment
 #'@importFrom DESeq2 DESeqDataSet
-#'
+#'@rdname RNAqc-class
+#'@name RNAqc-constructor
+#'@docType methods
 
 RNAqc <- function(counts,colData,picard = DataFrame(),...){
   if(is(colData,"data.frame")){
@@ -69,20 +74,24 @@ RNAqc <- function(counts,colData,picard = DataFrame(),...){
 setValidity2("RNAqc", .valid.RNAqc)
 
 #-- Accessor Methods
-
+#' Methods for RNAqc object
 #' @export
+#' @rdname RNAqc-methods
 setGeneric("piData",function(object,...)standardGeneric("piData"))
 
 #' @export
+#' @rdname RNAqc-methods
 setMethod("piData",signature = "RNAqc", function(object){
   out <- object@picard
   return(out)
 })
 
 #' @export
+#' @rdname RNAqc-methods
 setGeneric("Nmap", function(object,...)standardGeneric("Nmap"))
 
 #' @export
+#' @rdname RNAqc-methods
 setMethod("Nmap", signature = "RNAqc", function(object){
   out <- object@Nmap
   return(out)
@@ -91,7 +100,7 @@ setMethod("Nmap", signature = "RNAqc", function(object){
 
 #' @export
 #' @importMethodsFrom SummarizedExperiment show
-#'
+#' @rdname RNAqc-methods
 #'
 setMethod("show", signature = "RNAqc", function(object){
   callNextMethod()
@@ -102,11 +111,11 @@ setMethod("show", signature = "RNAqc", function(object){
 #-- Setter Methods
 
 #' @export
-#' 
+#' @rdname RNAqc-methods
 setGeneric("piData<-", function(object,...,value)standardGeneric("piData<-"))
 
 #' @export
-#'
+#' @rdname RNAqc-methods
 setReplaceMethod("piData","RNAqc",function(object,value){
   object@picard <- value
   validObject(object)
@@ -114,11 +123,11 @@ setReplaceMethod("piData","RNAqc",function(object,value){
 })
 
 #' @export
-#' 
+#' @rdname RNAqc-methods
 setGeneric("Nmap<-", function(object,...,value)standardGeneric("Nmap<-"))
 
 #' @export
-#' 
+#' @rdname RNAqc-methods
 setReplaceMethod("Nmap","RNAqc", function(object,value){
   object@Nmap <- value
   validObject(object)
@@ -128,6 +137,7 @@ setReplaceMethod("Nmap","RNAqc", function(object,value){
 #-- Enable Subsetting operations
 
 #' @export
+#' @rdname RNAqc-methods
 #' 
 setMethod("[","RNAqc",function(x, i, j, drop = TRUE){
   picard <- piData(x)
@@ -149,6 +159,7 @@ setMethod("[","RNAqc",function(x, i, j, drop = TRUE){
 
 #-- Subsetting Assignment
 #' @export
+#' @rdname RNAqc-methods
 setReplaceMethod("[", c("RNAqc", "ANY", "ANY", "RNAqc"),function(x, i, j, ..., value) {
   picard <- piData(x)
   if (!missing(j)) {
@@ -168,7 +179,11 @@ setReplaceMethod("[", c("RNAqc", "ANY", "ANY", "RNAqc"),function(x, i, j, ..., v
 
 
 #-- Define Coerce
+#' @rdname RNAqc-methods
+#' @name coerce
+#' @aliases coerce,DESeqDataSet,RNAqc-method
 #' @exportMethod coerce
+
 
 setAs("DESeqDataSet", "RNAqc", function(from) {
   new("RNAqc", from, 
