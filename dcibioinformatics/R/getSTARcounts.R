@@ -22,7 +22,7 @@ countCombine <- function(df1, df2) {
 #' @param suffix Suffix used by STAR to identify countfile
 #' @return Full path to the STAR count file
 mystarfile <- function(rootdir, stardir, suffix = "ReadsPerGene.out.tab") {
-    file.path(rootdir, stardir, paste(stardir, suffix, sep=""))
+    file.path(rootdir, stardir,"star",suffix)
 }
 
 
@@ -34,6 +34,7 @@ utils::globalVariables(c("stardir","."))
 #' @import dplyr
 #' @import foreach
 #' @import readr
+#' @import tibble
 #' @param rootdir The root directory under which the count file is stored
 #' @param strand The strand-specific protocol used in RNA sequencing. Choose one from \code{c("first", "second", "unstranded")}
 #' @return A strand-specific STAR count summary table
@@ -72,7 +73,9 @@ getSTARcounts <- function(rootdir,strand) {
     else stop("Missing strand argument! You must specify strand-specific protocol from c('first read strand','second read strand','unstranded')")
     
     if(sum(is.na(out))!= 0)stop("NA exists!")
-    out <- out %>% column_to_rownames(var = "gene")
+    out <- out %>%
+        as.data.frame()%>%
+        tibble::column_to_rownames(var = "gene")
     
     return(out)
 }

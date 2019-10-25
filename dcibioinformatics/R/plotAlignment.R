@@ -5,6 +5,7 @@
 #' @return A dataframe ready for plotting
 #' 
 #' 
+
 summary.RNAqc <- function(object){
   counts <- assay(object)
   sid <- as.character(colnames(counts))
@@ -27,7 +28,8 @@ setMethod("summary","RNAqc",function(object){
 
 # export ----------------------------------------------------------------------------
 ### Define global variables to avoid warnings in R CMD Check
-utils::globalVariables(c("object","variable",".","value","sid"))
+utils::globalVariables(c("object","variable",".","value","sid","Depth","Total.Bases","Prop_gene","Prop_ambiguous",
+                         "Prop_noFeature"))
 
 #' plotAlignment
 #' Plot stacked barplot for bases counting proportion for STAR and PICARD
@@ -36,7 +38,7 @@ utils::globalVariables(c("object","variable",".","value","sid"))
 #' @import tidyr
 #' @import tibble
 #' @param object A RNAqc instance
-#' @param type Counting reads or counting bases, select one from \code{c("HTSeq","Picard")}
+#' @param group grouping variable
 #' @param textsize Annotation size on the plot
 #' @param ... Other visual options used for geom_text
 #' @return A ggplot type plot
@@ -110,7 +112,7 @@ plotAlignment <- function(object, group, textsize = 3,...){
     theme(axis.text=element_text(size=10),
           axis.title=element_text(size=12, face="bold"),
           plot.title=element_text(face="italic"),
-          axis.text.x=element_text(angle=60, hjust=1))
+          axis.text.x=element_text(hjust=1))
   return(list(g_star,g_pi,g_map)) 
 }
 

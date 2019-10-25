@@ -18,7 +18,7 @@ picardCombine <- function(df1, df2){
 #' @return A list contains all the \code{.metrics} files
 
 myPidfile <- function(rootdir){
-  list.files(rootdir,pattern = "*.metrics",full.names = TRUE, recursive = TRUE)
+  list.files(rootdir,pattern = "*.metrics$",full.names = TRUE, recursive = TRUE)
 }
 
 
@@ -51,6 +51,6 @@ getPIcounts <- function(rootdir) {
         as.data.frame()%>%
         magrittr::set_rownames(gene)
   }
-  out[, 2:6] <- round(prop.table(out[, 2:6]) * 100, 2)
+  out[, 2:6] <- round(prop.table(as.matrix(out[,2:6]),margin = 1) * 100, 2)
   return(out)
-  }
+}

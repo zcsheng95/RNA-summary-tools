@@ -10,11 +10,11 @@ plotAlignment(object, group, textsize = 3, ...)
 \arguments{
 \item{object}{A RNAqc instance}
 
+\item{group}{grouping variable}
+
 \item{textsize}{Annotation size on the plot}
 
 \item{...}{Other visual options used for geom_text}
-
-\item{type}{Counting reads or counting bases, select one from \code{c("HTSeq","Picard")}}
 }
 \value{
 A ggplot type plot
