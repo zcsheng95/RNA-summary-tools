@@ -27,7 +27,7 @@ This documentation demonstrates the utility tools included in this package for g
 ## Introduction
 
 
-This is the package consists of a number of utility functions developed and maintained by the Duke Cancer Institute (DCI) Bioinformatics Group to facilitate reproducible bioinformatics analyses. This package includes 5 sample gene folders, storing the output for STAR run and Picard run, be aware that your directory structure may be different from this 5 sample files. Also because of that, it may take a while to build the vignette. 
+This is the package consists of a number of utility functions developed and maintained by the Duke Cancer Institute (DCI) Bioinformatics Group to facilitate reproducible bioinformatics analyses. This package includes 5 sample folders, storing the output for STAR run and Picard run, be aware that your directory structure may be different from this 5 sample files. 
 
 
 ## Workflow Using Example Data
