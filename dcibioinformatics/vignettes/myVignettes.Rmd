@@ -27,7 +27,7 @@ This documentation demonstrates the utility tools included in this package for g
 ## Introduction
 
 
-This is the package consists of a number of utility functions developed and maintained by the Duke Cancer Institute (DCI) Bioinformatics Group to facilitate reproducible bioinformatics analyses. This package includes two sample gene folders, storing the output for STAR run and Picard run, be aware that your directory structure may be different from this two sample files. Also because of that, it may take a while to build the vignette.
+This is the package consists of a number of utility functions developed and maintained by the Duke Cancer Institute (DCI) Bioinformatics Group to facilitate reproducible bioinformatics analyses. This package includes 5 sample gene folders, storing the output for STAR run and Picard run, be aware that your directory structure may be different from this 5 sample files. Also because of that, it may take a while to build the vignette. 
 
 
 ## Workflow Using Example Data
@@ -35,45 +35,75 @@ This is the package consists of a number of utility functions developed and main
 library(dcibioinformatics)
 ```
 
+ - Note: The STAR output should be stored in rootdir/sample/star/ , as the newest pipeline stores the output this way.  
+
 ### Tables output
 
 * **Summary of STAR run**
 
-```{r star summary, echo=TRUE,eval=F}
-rootdir <- dirname(system.file("extdata","Rh28-Ctrl-HA-FLAG-1_S1/",package = "dcibioinformatics",mustWork = TRUE))
+```{r star summary, echo=TRUE}
+rootdir <- dirname(system.file("extdata","sample1/",package = "dcibioinformatics",mustWork = TRUE))
 starsumm <- getSTARsum(rootdir = rootdir)
 knitr::kable(starsumm[1:10,],align = 'c',caption = 'STAR Alignment Summary')
 ```
 
 * **Summary of STAR Counts**
 
-```{r star counts,echo = TRUE,eval=F}
+```{r star counts,echo = TRUE}
 starcounts <- getSTARcounts(rootdir = rootdir, strand = "second")
 knitr::kable(starcounts[1:10,],align = 'c',caption = 'STAR Counts Summary')
 ```
 
 * **Summary of Picard Counts**
-```{r picard counts, echo = TRUE, eval=F}
+```{r picard counts, echo = TRUE}
 picounts <- getPIcounts(rootdir = rootdir)
 knitr::kable(picounts,align = 'c',caption = 'Picard Counts Summary')
-
 ```
+### Costructing RNAqc class
+
+```{r Create RNAqc class, echo = TRUE, eval=TRUE}
+coldata <- data.frame(condition = c('A','A','A','B','B'),row.names = paste0('sample',1:5))
+### Create RNAqc instance
+rnaqc <- RNAqc(counts = starcounts, colData = coldata, picard = picounts)
+show(rnaqc)
+```
+** Summary table for STAR mapping statistics**
+```{r summary, eval =TRUE, echo = TRUE}
+summary(rnaqc)
+```
+
 
 ### Figures output
 
 * **Counting Reads(STAR)**
 
-```{r counting reads bar plot, echo=TRUE, eval = FALSE}
-plotAlignment(starcounts,type = "HTSeq",textsize = 3)
+```{r counting reads bar plot, echo=TRUE}
+plot(rnaqc, textsize = 5)[[1]]
 ```
 
 * **Counting Bases(Picard)**
 
-```{r counting bases bar plot, echo = TRUE, eval = FALSE}
-plotAlignment(picounts,type = "Picard",textsize = 2)
-
+```{r counting bases bar plot, echo = TRUE}
+#### Without group
+plot(rnaqc,textsize = 2)[[2]]
 ```
+
+* **Unique Mapping rate**
+```{r unique mapping rate, echo = TRUE}
+plot(rnaqc, group = "condition")[[3]]
+```
+### Basic RNASeq Analsis
+* **PCA plot**
+```{r pca plot, echo = T, message=F}
+createPCplot(rnaqc, var = "condition", label = TRUE)
+```
+
+* **Plot Size Factors**
+```{r sizefactors ,echo = T, message=F}
+plotSizefactor(rnaqc, group = "condition")
+```
+### To be continued
 
 ### Reference
 
-- !! Use public dataset instead and cite here
+- !! Any external resources / Cite here

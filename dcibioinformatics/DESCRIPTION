@@ -1,6 +1,6 @@
 Package: dcibioinformatics
 Title: Duke Cancer Institute (DCI) R Package
-Version: 0.5
+Version: 0.8
 Authors@R: 
         c(person("Kouros", "Owzar", email = "kouros.owzar@duke.edu", role = c("aut")),
         person("Jeff", "Sheng", email = "zhecheng.sheng@duke.edu", role = c("aut","cre")))

@@ -39,6 +39,9 @@ Nmap(object, ...) <- value
 
 \S4method{[}{RNAqc,ANY,ANY,RNAqc}(x, i, j, ...) <- value
 }
+\arguments{
+\item{object}{An RNAqc instance}
+}
 \description{
 Methods for RNAqc object
 }

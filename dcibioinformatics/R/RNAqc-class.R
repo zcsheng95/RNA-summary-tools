@@ -24,6 +24,10 @@
 #'@export
 #'@importFrom SummarizedExperiment SummarizedExperiment
 #'@importFrom DESeq2 DESeqDataSet
+#'@param counts STAR counts matrix
+#'@param colData manifest information
+#'@param picard picard summary table 
+#'@param ... for potential extra arguments in constructing SummarizedExperiment
 #'@rdname RNAqc-class
 #'@name RNAqc-constructor
 #'@docType methods
@@ -80,6 +84,7 @@ setValidity2("RNAqc", .valid.RNAqc)
 setGeneric("piData",function(object,...)standardGeneric("piData"))
 
 #' @export
+#' @param object An RNAqc instance 
 #' @rdname RNAqc-methods
 setMethod("piData",signature = "RNAqc", function(object){
   out <- object@picard
