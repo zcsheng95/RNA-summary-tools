@@ -45,28 +45,20 @@ starPCA <- function(object,ntop = 1000){
 #' @param vars grouping variables
 #' @param labels sample id
 #' @param pc principal components to compare
-#' @param colors.group costumized color
-#' @param labels.group.pca sample id
-#' @param shapes.group costumiozed shapes
 #' @return ggplot type pca plot
 #' 
 #' 
 
-PCplot <- function(df, vars, labels, pc, colors.group, labels.group.pca, shapes.group){
+PCplot <- function(df, vars, labels, pc){
   
   pc_1 = paste0("pc",pc)[1]
   pc_2 = paste0("pc",pc)[2]
   g <- ggplot(df, aes_string(x = pc_1, y = pc_2,
                             color=vars,
-                            shape=vars,
                             label = "label")) +
     geom_point(size = 4, alpha=1) +
-    labs(shape = "", color="") +
+    labs(color="") +
     # geom_text()+
-    scale_color_manual(values=colors.group,
-                       labels = labels.group.pca) +
-    scale_shape_manual(values=shapes.group,
-                       labels = labels.group.pca) +
     geom_vline(xintercept=0, linetype = "dashed") +
     geom_hline(yintercept=0, linetype = "dashed") +
     theme_classic() +
@@ -85,7 +77,7 @@ PCplot <- function(df, vars, labels, pc, colors.group, labels.group.pca, shapes.
 #' This function takes the meta data and star counts 
 #' use DESeq2 for estimating size factors before considering any experiment designs.
 #' It requires the column names of the input count data matrix and the row names of the metadata have the same order
-#' @import ggrepel RColorBrewer
+#' @import ggrepel
 #' @importFrom gridExtra grid.arrange arrangeGrob
 #' @param object an RNAqc object
 #' @param var grouping variables
@@ -102,30 +94,21 @@ createPCplot <- function(object, var, labels = FALSE){
   yl <- paste0("PC2", ": ", round(percentVar[2] * 100), "% Variance")
   zl <- paste0("PC3", ": ", round(percentVar[3] * 100), "% Variance")
   axis_text <- c(xl, yl, zl) 
-  myColor =  brewer.pal(n = length(unique(pcadf[[var]])), name = "Paired")
-  
+
   group = factor(pcadf[[var]])
-  colors.group <- myColor[factor(levels(group))]
-  labels.group.pca = levels(group)
-  shapes.group = factor(levels(group))
-  
-  
-  g1 <- PCplot(df = pcadf, vars = var, labels = labels, pc = c(1,2),colors.group = colors.group, labels.group.pca = labels.group.pca, shapes.group = shapes.group) + 
+  g1 <- PCplot(df = pcadf, vars = var, labels = labels, pc = c(1,2)) + 
      labs(x = axis_text[1], y = axis_text[2])
-  g2 <- PCplot(df = pcadf, vars = var, labels = labels, pc = c(1,3),colors.group = colors.group, labels.group.pca = labels.group.pca, shapes.group = shapes.group) +
+  g2 <- PCplot(df = pcadf, vars = var, labels = labels, pc = c(1,3)) +
      labs(x = axis_text[1], y = axis_text[3])
-  g3 <- PCplot(df = pcadf, vars = var, labels = labels, pc = c(2,3),colors.group = colors.group, labels.group.pca = labels.group.pca, shapes.group = shapes.group) +
+  g3 <- PCplot(df = pcadf, vars = var, labels = labels, pc = c(2,3)) +
      labs(x = axis_text[2], y = axis_text[3])    
   
   mylegend<-get_legend(g1)
-  final <- grid.arrange(arrangeGrob(g1 + theme(legend.position="none"),
+  grid.arrange(arrangeGrob(g1 + theme(legend.position="none"),
                            g2 + theme(legend.position="none"),
                            g3 + theme(legend.position="none"),
                            nrow=1,top = "Principal Components Analysis"),
                mylegend, nrow=2,heights=c(10, 1))
-  
-  
-  return(final)
   
 }
 

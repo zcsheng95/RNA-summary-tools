@@ -1,0 +1,12 @@
+                                 Started job on |	Oct 26 23:55:12
+                             Started mapping on |	Oct 27 00:30:29
+                                    Finished on |	Oct 27 01:32:45
+       Mapping speed, Million of reads per hour |	23.43
+
+                          Number of input reads |	100000
+                      Average input read length |	55
+                                    UNIQUE READS:
+                   Uniquely mapped reads number |	79803
+                        Uniquely mapped reads % |	79.80%
+                          Average mapped length |	55.33
+                                         ...... |   ......

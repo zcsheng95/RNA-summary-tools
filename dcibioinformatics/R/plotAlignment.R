@@ -1,6 +1,6 @@
 # Summarize STAR output---------------------------------------------------------------------
 #' summary.RNAqc
-#' Helper function that makes adjustments to output from getSTARcounts to be ready for plotting
+#' summary of an RNAqc object to generate counts proportion table
 #' @param object An RNAqc instance
 #' @return A dataframe ready for plotting
 #' 
@@ -21,7 +21,8 @@ summary.RNAqc <- function(object){
   return(summ)
 }
 
-
+#' @export
+#' @rdname summary.RNAqc
 setMethod("summary","RNAqc",function(object){
   summary.RNAqc(object)
 })
@@ -38,15 +39,15 @@ utils::globalVariables(c("object","variable",".","value","sid","Depth","Total.Ba
 #' @import tidyr
 #' @import tibble
 #' @param object A RNAqc instance
-#' @param group grouping variable
+#' @param group grouping variable, default to NULL. If specified, will also return scatter plot for mapping rate.
 #' @param textsize Annotation size on the plot
 #' @param ... Other visual options used for geom_text
-#' @return A ggplot type plot
+#' @return A list of ggplot.
 #' @export
 #' 
 
 
-plotAlignment <- function(object, group, textsize = 3,...){
+plotAlignment <- function(object, group = NULL, textsize = 3,...){
   summtable <- summary(object)
   plotdata <- summtable %>%
     rownames_to_column(var = "sid") %>%
@@ -100,7 +101,7 @@ plotAlignment <- function(object, group, textsize = 3,...){
                 position = position_stack(vjust = 0.5),size=textsize,...)+
       theme_classic()
   }
-  
+  if(!is.null(group)){
   plot_dat <- summtable %>% 
     rownames_to_column(var = "sid") %>%
     dplyr::mutate(unimap = Prop_gene + Prop_ambiguous+ Prop_noFeature)
@@ -113,10 +114,13 @@ plotAlignment <- function(object, group, textsize = 3,...){
           axis.title=element_text(size=12, face="bold"),
           plot.title=element_text(face="italic"),
           axis.text.x=element_text(hjust=1))
-  return(list(g_star,g_pi,g_map)) 
+  return(list(g_star,g_pi,g_map))
+  }
+  else return(list(g_star,g_pi))
 }
 
-
+#' @export 
+#' @rdname plotAlignment
 
 setMethod("plot",
           signature = signature(x = "RNAqc",y = "missing"),

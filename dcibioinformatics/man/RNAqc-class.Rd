@@ -11,6 +11,15 @@ Inherit directly from DESeqDataSet class}
 \usage{
 RNAqc(counts, colData, picard = DataFrame(), ...)
 }
+\arguments{
+\item{counts}{STAR counts matrix}
+
+\item{colData}{manifest information}
+
+\item{picard}{picard summary table}
+
+\item{...}{for potential extra arguments in constructing SummarizedExperiment}
+}
 \description{
 Create new RNAqc class
 Inherit directly from DESeqDataSet class
