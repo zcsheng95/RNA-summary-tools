@@ -9,7 +9,7 @@
 \title{Create new RNAqc class
 Inherit directly from DESeqDataSet class}
 \usage{
-RNAqc(counts, colData, picard = DataFrame(), ...)
+RNAqc(counts, colData, picard = DataFrame(), anno = NULL, ...)
 }
 \arguments{
 \item{counts}{STAR counts matrix}
@@ -17,6 +17,8 @@ RNAqc(counts, colData, picard = DataFrame(), ...)
 \item{colData}{manifest information}
 
 \item{picard}{picard summary table}
+
+\item{anno}{path to the annotation file}
 
 \item{...}{for potential extra arguments in constructing SummarizedExperiment}
 }

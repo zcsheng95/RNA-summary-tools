@@ -24,15 +24,17 @@
 #'@export
 #'@importFrom SummarizedExperiment SummarizedExperiment
 #'@importFrom DESeq2 DESeqDataSet
+#'@importFrom S4Vectors mcols
 #'@param counts STAR counts matrix
 #'@param colData manifest information
-#'@param picard picard summary table 
+#'@param picard picard summary table
+#'@param anno path to the annotation file 
 #'@param ... for potential extra arguments in constructing SummarizedExperiment
 #'@rdname RNAqc-class
 #'@name RNAqc-constructor
 #'@docType methods
 
-RNAqc <- function(counts,colData,picard = DataFrame(),...){
+RNAqc <- function(counts,colData,picard = DataFrame(), anno = NULL,...){
   if(is(colData,"data.frame")){
     colData = as(colData, "DataFrame")
   }
@@ -46,6 +48,14 @@ RNAqc <- function(counts,colData,picard = DataFrame(),...){
   rcounts = counts[-1:-4,]
   se <- SummarizedExperiment(assays = list(counts = rcounts),colData = colData,...)
   dds <- DESeqDataSet(se, design = ~1)
+  if(!is.null(anno)){
+    annot <- read.table(anno, sep = '\t', header = T, stringsAsFactors = F)
+    annot %>% transmute(ens_id_ver = Geneid, ens_id = gsub("\\.\\d+", "", Geneid),
+                        symbol = GeneSymbol, genetype = Class) -> annot
+    rownames(annot) <- annot$ens_id_ver
+    if(!all(row.names(annot) == row.names(rcounts))) annot <-annot[order(row.names(rcounts)),]
+    mcols(dds) <- DataFrame(mcols(dds),annot[rownames(dds),])
+  }
   .RNAqc(dds,picard = picard,Nmap = Nmapp)
 }
 
@@ -69,6 +79,9 @@ RNAqc <- function(counts,colData,picard = DataFrame(),...){
   }
   if(min(Nmap(object) <0)){
     msg <- c(msg, "Mapping statistics can not be negative")
+  }
+  if(nrow(mcols(object)) != nrow(counts(object))){
+    msg <- c(msg, "Number of genes in the annotation does not match number of genes in the count matrix")
   }
   if (is.null(msg)) {
     TRUE
@@ -110,6 +123,8 @@ setMethod("Nmap", signature = "RNAqc", function(object){
 setMethod("show", signature = "RNAqc", function(object){
   callNextMethod()
   coolcat("picard names(%d): %s\n", rownames(piData(object)))
+  coolcat("gene symbols(%d): %s\n", mcols(object)$symbol)
+  
 })
 
 

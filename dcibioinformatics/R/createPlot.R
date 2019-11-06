@@ -130,3 +130,52 @@ plotSizefactor <- function(object, group){
           plot.title=element_text(face="italic"),
           axis.text.x=element_text(hjust=1))
 }
+
+#' Create normalized expression
+#' generate dataset ready for scatter plot
+#' @importFrom SummarizedExperiment assay
+#' @param object An RNAqc instance
+#' @param genelist a vector of gene of interest
+#' @return dataframe for plotting
+#' 
+normalCounts <- function(object, genelist){
+  n_rnaqc <- vst(object)
+  n_expression <- assay(n_rnaqc)
+  n_expression %>% t() %>% as.data.frame() %>% rownames_to_column(var = "uid")%>% tidyr::gather(key = "ens_id_ver","value",-uid) -> expression
+
+  if(!"symbol" %in% colnames(mcols(object))) stop("Must provide gene annotations!")
+  plotdat <- expression %>% dplyr::full_join(colData(n_rnaqc) %>% as.data.frame() %>%
+                              rownames_to_column(var = "uid"), by="uid") %>% 
+                              dplyr::left_join(mcols(n_rnaqc)%>%
+                              as.data.frame() %>% dplyr::select(ens_id_ver,symbol),by= "ens_id_ver")%>%
+                              dplyr::filter(symbol %in% genelist)
+  return(plotdat)
+  
+  }
+
+
+
+#' Check normalized expression
+#' create scatter plot of normalized counts for a list of targeted genes
+#' @param object An RNAqc instance
+#' @param group grouping variable default to none
+#' @param genelist a vector of gene of interest
+#' @param gridvar variable for facet grid, default to NULL
+#' @return scatter plot of the expression
+#' @export
+#' 
+checkExpression <- function(object, group, gridvar = NULL, genelist){
+  plotdata <- normalCounts(object, genelist) 
+  g<-ggplot(plotdata, aes_string(x = "symbol", y = "value", color = group)) +
+    geom_point(size = 2.5,alpha = 0.5, position = position_dodge(width = 0.4)) +
+    labs(x = "Genes", y = "Expression Level")  +
+    theme_classic() +
+    theme(legend.position="bottom",
+          axis.text=element_text(size=10),
+          axis.title=element_text(size=12, face="bold"),
+          plot.title=element_text(face="italic"),
+          axis.text.x=element_text(angle=0, hjust=1),
+          panel.border=element_rect(colour="black",fill=NA, size=0.2))
+  if(is.null(gridvar)) return (g)
+  else return(g + facet_grid(as.formula(paste0(gridvar, "~", "."))))
+}

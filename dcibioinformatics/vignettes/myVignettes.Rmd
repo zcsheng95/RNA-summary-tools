@@ -44,7 +44,7 @@ library(dcibioinformatics)
 * **Summary of STAR run**
 
 ```{r star summary, echo=TRUE}
-rootdir <- dirname(system.file("extdata","sample1/",package = "dcibioinformatics",mustWork = TRUE))
+rootdir <- dirname(system.file("extdata/samples","sample1/",package = "dcibioinformatics",mustWork = TRUE))
 starsumm <- getSTARsum(rootdir = rootdir)
 knitr::kable(starsumm[1:10,],align = 'c',caption = 'STAR Alignment Summary')
 ```
@@ -61,12 +61,15 @@ knitr::kable(starcounts[1:10,],align = 'c',caption = 'STAR Counts Summary')
 picounts <- getPIcounts(rootdir = rootdir)
 knitr::kable(picounts,align = 'c',caption = 'Picard Counts Summary')
 ```
+
 ### Costructing RNAqc class
 
 ```{r Create RNAqc class, echo = TRUE, eval=TRUE, results='markup'}
-coldata <- data.frame(condition = c('A','A','A','B','B'),row.names = paste0('sample',1:5))
+coldata <- data.frame(condition = c('A','A','A','B','B'),genotype = c('W','P','W','P','W'),row.names = paste0('sample',1:5))
 ### Create RNAqc instance
-rnaqc <- RNAqc(counts = starcounts, colData = coldata, picard = picounts)
+annodir <- dirname(system.file("extdata/","samples",package = "dcibioinformatics",mustWork = TRUE))
+anno <- file.path(annodir, "annotation.txt")
+rnaqc <- RNAqc(counts = starcounts, colData = coldata, picard = picounts,anno = anno)
 show(rnaqc)
 ```
 
@@ -95,7 +98,9 @@ plot(rnaqc,textsize = 2)[[2]]
 ```{r unique mapping rate, echo = TRUE}
 plot(rnaqc, group = "condition")[[3]]
 ```
+
 ### Basic RNASeq Analsis
+
 * **PCA plot**
 ```{r pca plot, echo = T, message=F}
 createPCplot(rnaqc, var = "condition", label = TRUE)
@@ -106,8 +111,21 @@ createPCplot(rnaqc, var = "condition", label = TRUE)
 plotSizefactor(rnaqc, group = "condition")
 ```
 
+
+* **Check expression level for selected genes**
+
+```{r visualize normlized counts for selected gene ,message=F,echo=T}
+genelist = c("XWRnD","5hRk2","kfR6w","XGUbU")
+checkExpression(rnaqc, group = "condition", genelist = genelist,gridvar = "genotype")
+```
+
 ### To Be Continued...
 
 ### Reference
 
 - !! Any external resources / Cite here
+
+
+```{r echo = TRUE, results='markup'}
+sessionInfo()
+```
