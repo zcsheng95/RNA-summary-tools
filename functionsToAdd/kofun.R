@@ -1,10 +1,18 @@
+#' This is a convenience function for extracting the STAR count files
+#' It will return a tibble with two colums:
+#' 1. Absolute file name for count file
+#' 2. library name
+#' Perhaps, it is best to extend it to contain  absolute file name
+#' for the final log file
+
 getSTARcntfnames <- function(mylevel, rootdir, mypattern, recursive, emptylab = "emptylib", duplab = function(x){make.unique(x, sep = "-")}) {
   myfiles <- normalizePath(list.files(path = rootdir,
                                       pattern = mypattern,
                                       include.dirs = TRUE,
                                       full.names = TRUE,
                                       recursive = recursive))
-  ### Use the file basename to get library name
+
+  ## Use the file basename to get library name
   if (mylevel == 0) {
     ## Get basename after removing pattern
     mylibname <- str_remove(basename(myfiles), mypattern)
@@ -63,8 +71,8 @@ gtffile <- "/mnt/data1/Annotation/Gencode/08292019/Human/gencode.v31.primary_ass
 
 rtracklayer::import(gtffile) %>%
   (tibble::as_tibble) %>%
-  subset(type == "gene") %>%
-  mutate(eid = str_remove(gene_id,"\\.[0-9]")) ->
+  dplyr::filter(type == "gene") %>%
+  dplyr::mutate(eid = str_remove(gene_id,"\\.[0-9]")) ->
   gtfanno
 
 
