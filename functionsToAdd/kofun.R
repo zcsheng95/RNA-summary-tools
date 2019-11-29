@@ -83,6 +83,7 @@ quickDESeq2obj <- function(starcnt, genelab, libcols) {
   coldat <- S4Vectors::DataFrame(idx = seq_len(length(libcols)), row.names = colnames(starcnt)[libcols])
   out <- DESeqDataSetFromMatrix(cntdat, colData = coldat, design = ~1)
   annodat <- S4Vectors::DataFrame(starcnt[,-libcols], row.names = starcnt[[genelab]])
+# revise to use granges instead
   mcols(out) <- cbind(mcols(out), annodat)
   if(!identical(starcnt[[genelab]], rownames(mcols(out))))
     out <- NULL
