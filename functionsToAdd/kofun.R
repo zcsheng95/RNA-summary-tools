@@ -64,18 +64,45 @@ mycnts <- DESeqDataSetFromMatrix(data.frame(out[-seq_len(4),-1], row.names = out
                                                                row.names = colnames(out)[-1]),
                                  design = ~1)
 
+
+#' Import GTF anotation
 library(rtracklayer)
-library(tidyverse)
 
 gtffile <- "/mnt/data1/Annotation/Gencode/08292019/Human/gencode.v31.primary_assembly.annotation.gtf"
 
+#' Only keep "genes"
 rtracklayer::import(gtffile) %>%
-  (tibble::as_tibble) %>%
-  dplyr::filter(type == "gene") %>%
-  dplyr::mutate(eid = str_remove(gene_id,"\\.[0-9]")) ->
-  gtfanno
+  dplyr::filter(type == "gene") ->
+  gtfdf
 
 
+quickDESeq2obj <- function(starcnt, rm4, gidx = NULL , lidx = NULL, gtfdf = NULL, gtfid = NULL) {
+  ## Assumes that the first column contains the gene names
+  ## and the remaining are the library names
+  if (rm4)
+    starcnt <- starcnt[-(1:4),]
+  if (is.null(gidx))
+    gidx <- 1
+  if (is.null(lidx))
+    lidx <- 2:ncol(starcnt)
+  cntdat <- data.frame(starcnt[, lidx], row.names = starcnt[[gidx]])
+  coldat <- S4Vectors::DataFrame(idx = lidx, row.names = colnames(starcnt)[lidx])
+  out <- DESeqDataSetFromMatrix(cntdat, colData = coldat, design = ~1)
+  ## Fix this! You have to feed this using granges
+  if (!is.null(gtfdf) & !is.null(gtfid)) {
+    if (identical(rownames(out), gtfdf[[gtfid]]) & gtfid %in% colnames(gtfdf)) {
+      rownames(gtfdf) <- gtfdf[[gtfid]]
+      mcols(out) <- gtfdf
+    }
+  }
+  out
+}
+
+deobj <- quickDESeq2obj(out,rm4 = TRUE)
+deobj <- quickDESeq2obj(out,rm4 = TRUE, gtfdf = gtfdf, gtfid = "gene_id")
+
+deobj <-estimateSizeFactors(deobj)
+deobj <-estimateDispersions(deobj) 
 
 gtfanno  %>%
   dplyr::select(seqnames, eid, gene_name, gene_id, gene_type) %>%
@@ -84,20 +111,3 @@ gtfanno  %>%
   dplyr::filter(gene_type %in% c("protein_coding","lncRNA")) %>%
   dplyr::rename(chr = seqnames) ->
   out1
-
-
-quickDESeq2obj <- function(starcnt, genelab, libcols) {
-  cntdat <- data.frame(starcnt[, libcols], row.names = starcnt[[genelab]])
-  coldat <- S4Vectors::DataFrame(idx = seq_len(length(libcols)), row.names = colnames(starcnt)[libcols])
-  out <- DESeqDataSetFromMatrix(cntdat, colData = coldat, design = ~1)
-  annodat <- S4Vectors::DataFrame(starcnt[,-libcols], row.names = starcnt[[genelab]])
-# revise to use granges instead
-  mcols(out) <- cbind(mcols(out), annodat)
-  if(!identical(starcnt[[genelab]], rownames(mcols(out))))
-    out <- NULL
-  return(out)
-}
-deobj <- quickDESeq2obj(out1, "eid", 6:10)
-deobj <-estimateSizeFactors(deobj)
-
-deobj <-estimateDispersions(deobj) 
