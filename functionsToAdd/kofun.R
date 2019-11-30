@@ -52,7 +52,7 @@ out <- foreach(myfile = iter(mycntfiles, by ="row"), .combine = countCombine)%do
   mylibname <-  myfile[["mylibname"]]
   print(mylibname)
   readr::read_tsv(myfname, col_names = FALSE, col_types = coltypes) %>%
-    dplyr::select(1, 4) %>%
+    dplyr::select(1, 2) %>%
       dplyr::rename_at(vars(names(.)),~c("gene", mylibname))
   
 }
