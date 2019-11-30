@@ -57,57 +57,65 @@ out <- foreach(myfile = iter(mycntfiles, by ="row"), .combine = countCombine)%do
   
 }
 
-# Quick DESeq2 data object
-
-mycnts <- DESeqDataSetFromMatrix(data.frame(out[-seq_len(4),-1], row.names = out[["gene"]][-seq_len(4)]),
-                                 colData= S4Vectors::DataFrame(idx = seq_len(ncol(out)-1),
-                                                               row.names = colnames(out)[-1]),
-                                 design = ~1)
 
 
 #' Import GTF anotation
 library(rtracklayer)
-
 gtffile <- "/mnt/data1/Annotation/Gencode/08292019/Human/gencode.v31.primary_assembly.annotation.gtf"
 
 #' Only keep "genes"
-rtracklayer::import(gtffile) %>%
-  dplyr::filter(type == "gene") ->
-  gtfdf
+rtracklayer::import(gtffile) -> gtfobj
+#' as.data.frame(gtfobj) -> gtfdf
 
 
-quickDESeq2obj <- function(starcnt, rm4, gidx = NULL , lidx = NULL, gtfdf = NULL, gtfid = NULL) {
-  ## Assumes that the first column contains the gene names
-  ## and the remaining are the library names
+
+quickDESeq2obj <- function(starcnt, rm4, gidx = NULL , lidx = NULL, gtfobj = NULL, geneid = NULL) {
+  #' This is a a convenience function for creating a DESeq2 data object. By default it assumes
+  #' assumes that the first column contains the gene names and the remaining are the library names
+  #' It also provides the option for adding annotation data as a GRanges object.
+
+  ## Should the first for rows be removed?
   if (rm4)
     starcnt <- starcnt[-(1:4),]
+  ## By default assume that the gene id is in the first column
   if (is.null(gidx))
     gidx <- 1
+  ## By default assume that the libraries are in columns 2 ... ncol(starcnt)
   if (is.null(lidx))
     lidx <- 2:ncol(starcnt)
+  ## Create a data.frame of the counts using the gene ids as row names
   cntdat <- data.frame(starcnt[, lidx], row.names = starcnt[[gidx]])
-  coldat <- S4Vectors::DataFrame(idx = lidx, row.names = colnames(starcnt)[lidx])
-  out <- DESeqDataSetFromMatrix(cntdat, colData = coldat, design = ~1)
-  ## Fix this! You have to feed this using granges
-  if (!is.null(gtfdf) & !is.null(gtfid)) {
-    if (identical(rownames(out), gtfdf[[gtfid]]) & gtfid %in% colnames(gtfdf)) {
-      rownames(gtfdf) <- gtfdf[[gtfid]]
-      mcols(out) <- gtfdf
+  ## Create a dummy colData DataFrame
+  coldat <- S4Vectors::DataFrame(idx = lidx, row.names = colnames(starcnt[,lidx]))
+  # Create a barebones DESeq2 data object
+  dedat <- DESeqDataSetFromMatrix(countData = cntdat, colData = coldat, design = ~1)
+  ## To add annotation data first check that a Granges object has been provided
+  ## and that a geneid column has been given
+  if (class(gtfobj) == "GRanges" & !is.null(geneid)) {
+    ## Confirm that the gene ids in the data object are identical to those in the
+    ## gtf object (same length/order) and that the geneid slot is present
+    if (identical(rownames(dedat), mcols(gtfobj)[[geneid]]) & geneid %in% colnames(mcols(gtfobj))) {
+      rowRanges(dedat) <- gtfobj
     }
   }
-  out
+  return(dedat)
 }
 
-deobj <- quickDESeq2obj(out,rm4 = TRUE)
-deobj <- quickDESeq2obj(out,rm4 = TRUE, gtfdf = gtfdf, gtfid = "gene_id")
+if(FALSE) {
+  deobj <- quickDESeq2obj(out, rm4 = TRUE)
+  deobj <- quickDESeq2obj(out, rm4 = TRUE, gidx = 1, lidx = 2:5)
+  deobj <- quickDESeq2obj(out, rm4 = TRUE, gidx = "gene" , lidx = colnames(out)[-1])
+  deobj <- quickDESeq2obj(out, rm4 = TRUE, gtfobj = gtfobj[gtfobj$type == "gene", ], geneid="gene_id")
+  
+  deobj <-estimateSizeFactors(deobj)
+  deobj <-estimateDispersions(deobj)
+  deobj1 <- deobj[mcols(deobj)$gene_type %in% c("protein_coding", "lncRNA", "Mt_rRNA"),]
 
-deobj <-estimateSizeFactors(deobj)
-deobj <-estimateDispersions(deobj) 
+  mcols(deobj)[,c("gene_id", "gene_type"), drop = FALSE] %>%
+    as_tibble %>%
+    full_join(out, by = c("gene_id" = "gene")) %>%
+    group_by(gene_type) %>%
+    summarize_at(vars(2:6), sum) %>%
+    arrange(desc(`pt-2-pre-DUKE`)) %>% data.frame
+}
 
-gtfanno  %>%
-  dplyr::select(seqnames, eid, gene_name, gene_id, gene_type) %>%
-  dplyr::full_join(out[-(1:4),], by = c("gene_id"="gene")) %>%
-  dplyr::filter(seqnames %in% paste0("chr",c(1:22, "X", "Y", "M"))) %>%
-  dplyr::filter(gene_type %in% c("protein_coding","lncRNA")) %>%
-  dplyr::rename(chr = seqnames) ->
-  out1
