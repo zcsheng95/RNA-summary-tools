@@ -5,10 +5,14 @@
 \title{getSTARsum
 Produce a summary table for STAR alignment process}
 \usage{
-getSTARsum(rootdir)
+getSTARsum(rootdir, level)
 }
 \arguments{
 \item{rootdir}{The root directory under which the count file is stored}
+
+\item{level}{indicate the structure of star output, level = 0 means basename contains libname, level = 1 and 2 indicates different nested dir structure.}
+
+\item{pipeline}{The rnaseq pipeline version}
 }
 \value{
 A joint table for STAR alignment staitistics

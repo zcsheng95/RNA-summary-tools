@@ -68,8 +68,8 @@ knitr::kable(picounts,align = 'c',caption = 'Picard Counts Summary')
 coldata <- data.frame(condition = c('A','A','A','B','B'),genotype = c('W','P','W','P','W'),row.names = paste0('sample',1:5))
 ### Create RNAqc instance
 annodir <- dirname(system.file("extdata/","samples",package = "dcibioinformatics",mustWork = TRUE))
-anno <- file.path(annodir, "annotation.txt")
-rnaqc <- RNAqc(counts = starcounts, colData = coldata, picard = picounts,anno = anno)
+anno <- read.table(file.path(annodir, "annotation.txt"),header = TRUE,sep ='\t')
+rnaqc <- RNAqc(counts = starcounts, colData = coldata, picard = picounts,anno = NULL)
 show(rnaqc)
 ```
 
@@ -116,7 +116,8 @@ plotSizefactor(rnaqc, group = "condition")
 
 ```{r visualize normlized counts for selected gene ,message=F,echo=T}
 genelist = c("XWRnD","5hRk2","kfR6w","XGUbU")
-checkExpression(rnaqc, group = "condition", genelist = genelist,gridvar = "genotype")
+idlist = c('gene1.1','gene2.1','gene3.1','gene4.1')
+checkExpression(rnaqc, group = "condition", target = idlist,gridvar = "genotype")
 ```
 
 ### To Be Continued...

@@ -49,12 +49,12 @@ RNAqc <- function(counts,colData,picard = DataFrame(), anno = NULL,...){
   se <- SummarizedExperiment(assays = list(counts = rcounts),colData = colData,...)
   dds <- DESeqDataSet(se, design = ~1)
   if(!is.null(anno)){
-    annot <- read.table(anno, sep = '\t', header = T, stringsAsFactors = F)
-    annot %>% transmute(ens_id_ver = Geneid, ens_id = gsub("\\.\\d+", "", Geneid),
-                        symbol = GeneSymbol, genetype = Class) -> annot
-    rownames(annot) <- annot$ens_id_ver
-    if(!all(row.names(annot) == row.names(rcounts))) annot <-annot[order(row.names(rcounts)),]
-    mcols(dds) <- DataFrame(mcols(dds),annot[rownames(dds),])
+    colnames(anno) <- c("Geneid","GeneSymbol","Class")
+    anno %>% transmute(ens_id_ver = Geneid, ens_id = gsub("\\.\\d+", "", Geneid),
+                        symbol = GeneSymbol, genetype = Class) -> anno
+    rownames(anno) <- anno$ens_id_ver
+    if(!all(row.names(anno) == row.names(rcounts))) anno <-anno[order(row.names(rcounts)),]
+    mcols(dds) <- DataFrame(mcols(dds),anno[rownames(dds),])
   }
   .RNAqc(dds,picard = picard,Nmap = Nmapp)
 }

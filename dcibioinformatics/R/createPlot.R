@@ -135,20 +135,33 @@ plotSizefactor <- function(object, group){
 #' generate dataset ready for scatter plot
 #' @importFrom SummarizedExperiment assay
 #' @param object An RNAqc instance
-#' @param genelist a vector of gene of interest
+#' @param target a vector of gene of interest
 #' @return dataframe for plotting
 #' 
-normalCounts <- function(object, genelist){
+normalCounts <- function(object, target){
   n_rnaqc <- vst(object)
   n_expression <- assay(n_rnaqc)
-  n_expression %>% t() %>% as.data.frame() %>% rownames_to_column(var = "uid")%>% tidyr::gather(key = "ens_id_ver","value",-uid) -> expression
 
-  if(!"symbol" %in% colnames(mcols(object))) stop("Must provide gene annotations!")
-  plotdat <- expression %>% dplyr::full_join(colData(n_rnaqc) %>% as.data.frame() %>%
+  if(!"symbol" %in% colnames(mcols(object))){
+      warning("Annotation is not detected or not properly named!")
+      n_expression %>% t() %>% as.data.frame() %>% 
+      dplyr::select(.,one_of(target)) %>%
+      rownames_to_column(var = "uid")%>% 
+      tidyr::gather(key = "ens_id_ver","value",-uid) -> expression
+      plotdat <- expression %>% dplyr::full_join(colData(n_rnaqc) %>% as.data.frame() %>%                                                                
+                                                 rownames_to_column(var = "uid"), by="uid") %>%
+                                                 dplyr::rename(symbol=ens_id_ver)
+  }
+  else{
+      n_expression %>% t() %>% as.data.frame() %>% 
+      rownames_to_column(var = "uid")%>% 
+      tidyr::gather(key = "ens_id_ver","value",-uid) -> expression
+      plotdat <- expression %>% dplyr::full_join(colData(n_rnaqc) %>% as.data.frame() %>%
                               rownames_to_column(var = "uid"), by="uid") %>% 
                               dplyr::left_join(mcols(n_rnaqc)%>%
-                              as.data.frame() %>% dplyr::select(ens_id_ver,symbol),by= "ens_id_ver")%>%
-                              dplyr::filter(symbol %in% genelist)
+                              as.data.frame() %>% dplyr::select(ens_id_ver,symbol),by= "ens_id_ver") %>%
+                              dplyr::filter(symbol %in% target)
+  }                         
   return(plotdat)
   
   }
@@ -157,6 +170,7 @@ normalCounts <- function(object, genelist){
 
 #' Check normalized expression
 #' create scatter plot of normalized counts for a list of targeted genes
+#' @importFrom stats as.formula
 #' @param object An RNAqc instance
 #' @param group grouping variable default to none
 #' @param genelist a vector of gene of interest
@@ -164,8 +178,8 @@ normalCounts <- function(object, genelist){
 #' @return scatter plot of the expression
 #' @export
 #' 
-checkExpression <- function(object, group, gridvar = NULL, genelist){
-  plotdata <- normalCounts(object, genelist) 
+checkExpression <- function(object, group, gridvar = NULL, target){
+  plotdata <- normalCounts(object, target) 
   g<-ggplot(plotdata, aes_string(x = "symbol", y = "value", color = group)) +
     geom_point(size = 2.5,alpha = 0.5, position = position_dodge(width = 0.4)) +
     labs(x = "Genes", y = "Expression Level")  +

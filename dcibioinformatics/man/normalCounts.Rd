@@ -5,12 +5,12 @@
 \title{Create normalized expression
 generate dataset ready for scatter plot}
 \usage{
-normalCounts(object, genelist)
+normalCounts(object, target)
 }
 \arguments{
 \item{object}{An RNAqc instance}
 
-\item{genelist}{a vector of gene of interest}
+\item{target}{a vector of gene of interest}
 }
 \value{
 dataframe for plotting
