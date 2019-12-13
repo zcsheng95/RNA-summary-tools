@@ -101,6 +101,8 @@ plotAlignment <- function(object, group = NULL, textsize = 3,...){
                 position = position_stack(vjust = 0.5),size=textsize,...)+
       theme_classic()
   }
+  else(g_pi = "No picard outputs provided!")
+  
   if(!is.null(group)){
   plot_dat <- summtable %>% 
     rownames_to_column(var = "sid") %>%
@@ -109,6 +111,7 @@ plotAlignment <- function(object, group = NULL, textsize = 3,...){
   g_map <- ggplot(plot_dat, aes_string(x = "sid", y = "unimap",color = as.factor(colData(object)[[group]])))+
     geom_point(size = 4) +
     labs(x = "Samples", y = "Unique Mapping Rate",color = group) +
+    scale_x_discrete(limits= plot_dat$sid) +
     theme_classic() +
     theme(axis.text=element_text(size=10),
           axis.title=element_text(size=12, face="bold"),

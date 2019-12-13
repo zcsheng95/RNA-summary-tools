@@ -3,16 +3,17 @@
 \name{getSTARcounts}
 \alias{getSTARcounts}
 \title{getSTARcounts
-Extract strand-specific STAR counts for each sample and then merge all counts into a single table}
+Extract strand-specific STAR counts for each sample and then merge all counts into a single table
+Make sure the files and library names are paired}
 \usage{
-getSTARcounts(rootdir, strand, level)
+getSTARcounts(files, libnames, strand)
 }
 \arguments{
-\item{rootdir}{The root directory under which the count file is stored}
+\item{files}{The list of files to read in}
+
+\item{libnames}{Sample names, make sure they are paired with files}
 
 \item{strand}{The strand-specific protocol used in RNA sequencing. Choose one from \code{c("first", "second", "unstranded")}}
-
-\item{level}{indicate the structure of star output, level = 0 means basename contains libname, level = 1 and 2 indicates different nested dir structure.}
 }
 \value{
 A strand-specific STAR count summary table
@@ -20,4 +21,5 @@ A strand-specific STAR count summary table
 \description{
 getSTARcounts
 Extract strand-specific STAR counts for each sample and then merge all counts into a single table
+Make sure the files and library names are paired
 }

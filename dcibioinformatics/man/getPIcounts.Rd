@@ -5,7 +5,7 @@
 \title{getPIcounts
 Extract counting bases summary from PICARD output}
 \usage{
-getPIcounts(rootdir)
+getPIcounts(files, libnames)
 }
 \arguments{
 \item{rootdir}{Directory that stores all picard \code{.metrics} file}

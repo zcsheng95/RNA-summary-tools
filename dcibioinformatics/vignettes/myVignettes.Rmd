@@ -2,7 +2,7 @@
 title: "DCI Bioinformatics tools: Summary statistics used for QC automatic report"
 author: "Zhecheng Sheng"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: pdf_document
 vignette: >
   %\VignetteIndexEntry{DCI Bioinformatics tools: Summary statistics used for QC automatic report}
   %\VignetteEngine{knitr::rmarkdown}
@@ -44,32 +44,40 @@ library(dcibioinformatics)
 * **Summary of STAR run**
 
 ```{r star summary, echo=TRUE}
-rootdir <- dirname(system.file("extdata/samples","sample1/",package = "dcibioinformatics",mustWork = TRUE))
-starsumm <- getSTARsum(rootdir = rootdir)
+rootdir <- dirname(system.file("extdata/samples","sample1/",
+                package = "dcibioinformatics",mustWork = TRUE)) 
+
+libnames <- list.files(rootdir)
+filenames <- list.files(rootdir,pattern = "Log.final.out",recursive = T,full.names = T)
+starsumm <- getSTARsum(libnames = libnames,files = filenames)
 knitr::kable(starsumm[1:10,],align = 'c',caption = 'STAR Alignment Summary')
 ```
 
 * **Summary of STAR Counts**
 
 ```{r star counts,echo = TRUE}
-starcounts <- getSTARcounts(rootdir = rootdir, strand = "second")
+files = list.files(rootdir,pattern = "ReadsPerGene.out.tab",recursive = T,full.names = T)
+starcounts <- getSTARcounts(files = files,libnames = libnames,strand = "second")
 knitr::kable(starcounts[1:10,],align = 'c',caption = 'STAR Counts Summary')
 ```
 
 * **Summary of Picard Counts**
 ```{r picard counts, echo = TRUE}
-picounts <- getPIcounts(rootdir = rootdir)
+files = list.files(rootdir,pattern = "metrics",recursive = T,full.names = T)
+picounts <- getPIcounts(files,libnames)
 knitr::kable(picounts,align = 'c',caption = 'Picard Counts Summary')
 ```
 
 ### Costructing RNAqc class
 
 ```{r Create RNAqc class, echo = TRUE, eval=TRUE, results='markup'}
-coldata <- data.frame(condition = c('A','A','A','B','B'),genotype = c('W','P','W','P','W'),row.names = paste0('sample',1:5))
+coldata <- data.frame(condition = c('A','A','A','B','B'),genotype = c('W','P','W','P','W'),
+row.names = paste0('sample',1:5))
 ### Create RNAqc instance
 annodir <- dirname(system.file("extdata/","samples",package = "dcibioinformatics",mustWork = TRUE))
-anno <- read.table(file.path(annodir, "annotation.txt"),header = TRUE,sep ='\t')
-rnaqc <- RNAqc(counts = starcounts, colData = coldata, picard = picounts,anno = NULL)
+anno <- read.table(file.path(annodir, "annotation.txt"),header = TRUE,sep ='\t',stringsAsFactors = F)
+rnaqc <- RNAqc(counts = starcounts, colData = coldata, picard = picounts,
+anno = anno)
 show(rnaqc)
 ```
 
@@ -116,8 +124,8 @@ plotSizefactor(rnaqc, group = "condition")
 
 ```{r visualize normlized counts for selected gene ,message=F,echo=T}
 genelist = c("XWRnD","5hRk2","kfR6w","XGUbU")
-idlist = c('gene1.1','gene2.1','gene3.1','gene4.1')
-checkExpression(rnaqc, group = "condition", target = idlist,gridvar = "genotype")
+#idlist = c('gene1.1','gene2.1','gene3.1','gene4.1')
+checkExpression(rnaqc, group = "condition", target = genelist,gridvar = "genotype")
 ```
 
 ### To Be Continued...

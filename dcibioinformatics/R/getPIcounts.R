@@ -12,16 +12,6 @@ picardCombine <- function(df1, df2){
 
 
 
-#' myPidfile
-#' get picard \code{.metrics} files from root directory
-#' @param rootdir Directory that stores all picard \code{.metrics} file
-#' @return A list contains all the \code{.metrics} files
-
-myPidfile <- function(rootdir){
-  list.files(rootdir,pattern = "*.metrics$",full.names = TRUE, recursive = TRUE)
-}
-
-
 # Export function ------------------------------------------------------------------------
 utils::globalVariables(c("pidfile","PF_BASES","CODING_BASES","UTR_BASES","INTRONIC_BASES","INTERGENIC_BASES","RIBOSOMAL_BASES",
                          "Coding+UTR","Intronic","Intergenic","Ribosomal"))
@@ -35,11 +25,12 @@ utils::globalVariables(c("pidfile","PF_BASES","CODING_BASES","UTR_BASES","INTRON
 #' @export
 
 
-getPIcounts <- function(rootdir) {
-  pidfiles <- myPidfile(rootdir)  
-  out <- foreach(pidfile = pidfiles, .combine = picardCombine)%do%{
-      gene <- gsub(".metrics","",basename(pidfile))
-      readr::read_tsv(pidfile, col_names = TRUE, skip = 6, n_max = 1,col_types = cols()) %>%
+getPIcounts <- function(files, libnames) {
+  mymetricfiles <- tibble(myfname = files, mylibname = libnames)
+  out <- foreach(myfile = iter(mymetricfiles, by ="row"), .combine = picardCombine)%do%{
+    pidfile <- myfile[["myfname"]]
+    mylibname <-  myfile[["mylibname"]]  
+    readr::read_tsv(pidfile, col_names = TRUE, skip = 6, n_max = 1,col_types = cols()) %>%
         dplyr::transmute(`Total Bases` = format(PF_BASES,
                                          big.mark = ",",
                                          scientific = F),
@@ -49,7 +40,7 @@ getPIcounts <- function(rootdir) {
                   Ribosomal = RIBOSOMAL_BASES,
                   Unaligned = PF_BASES - `Coding+UTR` - Intronic - Intergenic - Ribosomal)%>%
         as.data.frame()%>%
-        magrittr::set_rownames(gene)
+        magrittr::set_rownames(mylibname)
   }
   out[, 2:6] <- round(prop.table(as.matrix(out[,2:6]),margin = 1) * 100, 2)
   return(out)

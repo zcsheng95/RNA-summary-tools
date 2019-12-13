@@ -17,16 +17,15 @@ Combine <- function(df1, df2) {
 utils::globalVariables(c("stardir","."))
 #' getSTARsum
 #' Produce a summary table for STAR alignment process
-#' @param rootdir The root directory under which the count file is stored
-#' @param pipeline The rnaseq pipeline version
-#' @param level indicate the structure of star output, level = 0 means basename contains libname, level = 1 and 2 indicates different nested dir structure.
+#' @param files The list of files to read in
+#' @param libnames Sample names, make sure they are paired with files 
 #' @return A joint table for STAR alignment staitistics
 #' @export
 
-getSTARsum <- function(rootdir, level){
+getSTARsum <- function(files, libnames){
   ### Predefine column types
   coltypes <- list(col_character(), col_character())
-  mylogfiles <- getSTARcntfnames(level, rootdir, "Log.final.out", recursive = TRUE)
+  mylogfiles <- tibble(myfname = files, mylibname = libnames)  
   out <- foreach(myfile = iter(mylogfiles, by ="row"), .combine = Combine)%do%{
     myfname <- myfile[["myfname"]]
     mylibname <-  myfile[["mylibname"]]
