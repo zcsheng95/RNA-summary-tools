@@ -90,6 +90,25 @@ RNAqc <- function(counts,colData,picard = DataFrame(), anno = NULL,...){
 
 setValidity2("RNAqc", .valid.RNAqc)
 
+#-- Add gtf Annotations
+#' @export
+#' @rdname RNAqc-class
+#' @param obj a RNAqc object
+#' @param gtfobj a GRange object, typically import from rtracklayer
+#' @param id gene ids or transcript ids
+#' @param type regions from gtf to match
+addGTF <- function(obj, gtfobj,id,type){
+  if (class(gtfobj) == "GRanges" & !is.null(id)) {
+    gtfobj <- gtfobj[gtfobj$type == type, ]
+    if(identical(sort(rownames(obj)), sort(unique(mcols(gtfobj)[[id]])))){
+      rowRanges(obj) <- gtfobj
+    }
+  }
+  else{
+    stop("gtf must be a GRanges object or gene id column is not given!")
+  }
+  return(obj)
+}
 #-- Accessor Methods
 #' Methods for RNAqc object
 #' @export

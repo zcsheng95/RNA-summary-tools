@@ -7,7 +7,7 @@
 \title{summary.RNAqc
 summary of an RNAqc object to generate counts proportion table}
 \usage{
-summary.RNAqc(object)
+\method{summary}{RNAqc}(object)
 
 \S4method{summary}{RNAqc}(object)
 }

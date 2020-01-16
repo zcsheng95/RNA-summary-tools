@@ -6,10 +6,13 @@
 \alias{.RNAqc}
 \alias{RNAqc-constructor}
 \alias{RNAqc}
+\alias{addGTF}
 \title{Create new RNAqc class
 Inherit directly from DESeqDataSet class}
 \usage{
 RNAqc(counts, colData, picard = DataFrame(), anno = NULL, ...)
+
+addGTF(obj, gtfobj, id, type)
 }
 \arguments{
 \item{counts}{STAR counts matrix}
@@ -21,6 +24,14 @@ RNAqc(counts, colData, picard = DataFrame(), anno = NULL, ...)
 \item{anno}{path to the annotation file}
 
 \item{...}{for potential extra arguments in constructing SummarizedExperiment}
+
+\item{obj}{a RNAqc object}
+
+\item{gtfobj}{a GRange object, typically import from rtracklayer}
+
+\item{id}{gene ids or transcript ids}
+
+\item{type}{regions from gtf to match}
 }
 \description{
 Create new RNAqc class
