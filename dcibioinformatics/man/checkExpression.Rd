@@ -5,7 +5,7 @@
 \title{Check normalized expression
 create scatter plot of normalized counts for a list of targeted genes}
 \usage{
-checkExpression(object, group, gridvar = NULL, target)
+checkExpression(object, group, gridvar = NULL, target, ...)
 }
 \arguments{
 \item{object}{An RNAqc instance}
@@ -13,6 +13,8 @@ checkExpression(object, group, gridvar = NULL, target)
 \item{group}{grouping variable default to none}
 
 \item{gridvar}{variable for facet grid, default to NULL}
+
+\item{...}{settings for geom_point}
 
 \item{genelist}{a vector of gene of interest}
 }

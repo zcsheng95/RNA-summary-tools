@@ -50,9 +50,9 @@ RNAqc <- function(counts,colData,picard = DataFrame(), anno = NULL,...){
   dds <- DESeqDataSet(se, design = ~1)
   if(!is.null(anno)){
     colnames(anno) <- c("Geneid","GeneSymbol","Class")
-    anno %>% transmute(ens_id_ver = Geneid, ens_id = gsub("\\.\\d+", "", Geneid),
-                        symbol = GeneSymbol, genetype = Class) -> anno
-    rownames(anno) <- anno$ens_id_ver
+    anno %>% transmute( gene_id = Geneid, id_nover = gsub("\\.\\d+", "", Geneid),
+                        gene_name = GeneSymbol, type = Class) -> anno
+    rownames(anno) <- anno$gene_id
     if(!all(row.names(anno) == row.names(rcounts))) anno <-anno[order(row.names(rcounts)),]
     mcols(dds) <- DataFrame(mcols(dds),anno[rownames(dds),])
   }
@@ -102,6 +102,7 @@ addGTF <- function(obj, gtfobj,id,type){
     gtfobj <- gtfobj[gtfobj$type == type, ]
     if(identical(sort(rownames(obj)), sort(unique(mcols(gtfobj)[[id]])))){
       rowRanges(obj) <- gtfobj
+      rownames(obj) <- mcols(obj)$gene_id
     }
   }
   else{
@@ -142,7 +143,7 @@ setMethod("Nmap", signature = "RNAqc", function(object){
 setMethod("show", signature = "RNAqc", function(object){
   callNextMethod()
   coolcat("picard names(%d): %s\n", rownames(piData(object)))
-  coolcat("gene symbols(%d): %s\n", mcols(object)$symbol)
+  coolcat("gene symbols(%d): %s\n", mcols(object)$gene_name)
   
 })
 

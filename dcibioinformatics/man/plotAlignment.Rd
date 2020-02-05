@@ -7,7 +7,8 @@
 \title{plotAlignment
 Plot stacked barplot for bases counting proportion for STAR and PICARD}
 \usage{
-plotAlignment(object, group = NULL, textsize = 3, ...)
+plotAlignment(object, group = NULL, textsize = 3, text = TRUE,
+  angle = 60, ...)
 
 \S4method{plot}{RNAqc,missing}(x, y, ...)
 }
@@ -18,7 +19,9 @@ plotAlignment(object, group = NULL, textsize = 3, ...)
 
 \item{textsize}{Annotation size on the plot}
 
-\item{...}{Other visual options used for geom_text}
+\item{angle}{x axis angle}
+
+\item{...}{settings for geom_point}
 }
 \value{
 A list of ggplot.

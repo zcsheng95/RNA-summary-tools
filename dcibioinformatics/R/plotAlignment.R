@@ -41,13 +41,14 @@ utils::globalVariables(c("object","variable",".","value","sid","Depth","Total.Ba
 #' @param object A RNAqc instance
 #' @param group grouping variable, default to NULL. If specified, will also return scatter plot for mapping rate.
 #' @param textsize Annotation size on the plot
-#' @param ... Other visual options used for geom_text
+#' @param angle x axis angle
+#' @param ... settings for geom_point
 #' @return A list of ggplot.
 #' @export
 #' 
 
 
-plotAlignment <- function(object, group = NULL, textsize = 3,...){
+plotAlignment <- function(object, group = NULL, textsize = 3,text = TRUE,angle = 60,...){
   summtable <- summary(object)
   plotdata <- summtable %>%
     rownames_to_column(var = "sid") %>%
@@ -70,13 +71,15 @@ plotAlignment <- function(object, group = NULL, textsize = 3,...){
                         "Unmapped" = "#CA0020")
   g_star <- ggplot2::ggplot(plotdata, aes_string(x = "sid", y = "value", fill = "variable")) +
     scale_x_discrete(limits = unique(plotdata$sid)) + 
-    theme(axis.text.x=element_text(angle=60, hjust=1))+
     geom_bar(stat="identity", color = "black", size =0.3) + 
     scale_fill_manual(values=colors.alignment) +
     labs(y = "Percentage", x = "Sample", fill = "Type") +
-    geom_text(aes(label = paste0(value,"%")),  
-              position = position_stack(vjust = 0.5),size = textsize,...)+
-    theme_classic()
+    theme_classic()+
+    theme(axis.text.x=element_text(angle=angle, hjust=1))
+  if(text == TRUE){
+    g_star <- g_star + geom_text(aes(label = paste0(value,"%")),  
+              position = position_stack(vjust = 0.5),size = textsize)
+  }
   
   if(!identical(piData(object),DataFrame(0))){
     counts <- piData(object)
@@ -93,30 +96,32 @@ plotAlignment <- function(object, group = NULL, textsize = 3,...){
                           "Unaligned" = "#E6E6F9")
     g_pi<-ggplot(plotdata, aes_string(x = "sid", y = "value", fill = "variable")) +
       scale_x_discrete(limits = unique(plotdata$sid)) + 
-      theme(axis.text.x=element_text(angle=60, hjust=1))+
       geom_bar(stat="identity", color = "black", size =0.3) + 
       scale_fill_manual(values=colors.alignment) +
       labs(y = "Percentage", x = "Sample", fill = "Type") +
-      geom_text(aes(label = paste0(value,"%")), 
-                position = position_stack(vjust = 0.5),size=textsize,...)+
-      theme_classic()
+      theme_classic()+
+      theme(axis.text.x=element_text(angle=angle, hjust=1))
+    if(text == TRUE){
+      g_pi <- g_pi + geom_text(aes(label = paste0(value,"%")),  
+                                   position = position_stack(vjust = 0.5),size = textsize)
+    }
   }
   else(g_pi = "No picard outputs provided!")
   
   if(!is.null(group)){
-  plot_dat <- summtable %>% 
-    rownames_to_column(var = "sid") %>%
-    dplyr::mutate(unimap = Prop_gene + Prop_ambiguous+ Prop_noFeature)
-  
-  g_map <- ggplot(plot_dat, aes_string(x = "sid", y = "unimap",color = as.factor(colData(object)[[group]])))+
-    geom_point(size = 4) +
-    labs(x = "Samples", y = "Unique Mapping Rate",color = group) +
-    scale_x_discrete(limits= plot_dat$sid) +
-    theme_classic() +
-    theme(axis.text=element_text(size=10),
+    plot_dat <- summtable %>% 
+      rownames_to_column(var = "sid") %>%
+      dplyr::mutate(unimap = Prop_gene + Prop_ambiguous+ Prop_noFeature)
+    plot_dat$sid <- factor(plot_dat$sid, levels = plot_dat$sid)
+    g_map <- ggplot(plot_dat, aes_string(x = "sid", y = "unimap",color = as.factor(colData(object)[[group]])))+
+      geom_point(...) +
+      labs(x = "Samples", y = "Unique Mapping Rate",color = group) +
+      scale_x_discrete(limits= plot_dat$sid) +
+      theme_classic() +
+      theme(axis.text=element_text(size=10),
           axis.title=element_text(size=12, face="bold"),
           plot.title=element_text(face="italic"),
-          axis.text.x=element_text(hjust=1))
+          axis.text.x=element_text(hjust=1, angle = angle))
   return(list(g_star,g_pi,g_map))
   }
   else return(list(g_star,g_pi))

@@ -6,7 +6,7 @@
 Extract strand-specific STAR counts for each sample and then merge all counts into a single table
 Make sure the files and library names are paired}
 \usage{
-getSTARcounts(files, libnames, strand)
+getSTARcounts(files, libnames, strand, verbose = TRUE)
 }
 \arguments{
 \item{files}{The list of files to read in}
@@ -14,6 +14,8 @@ getSTARcounts(files, libnames, strand)
 \item{libnames}{Sample names, make sure they are paired with files}
 
 \item{strand}{The strand-specific protocol used in RNA sequencing. Choose one from \code{c("first", "second", "unstranded")}}
+
+\item{verbose}{True or False. Show read in progress}
 }
 \value{
 A strand-specific STAR count summary table

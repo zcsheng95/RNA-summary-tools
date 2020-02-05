@@ -13,10 +13,11 @@ utils::globalVariables(c("stardir","."))
 #' @param files The list of files to read in
 #' @param libnames Sample names, make sure they are paired with files 
 #' @param strand The strand-specific protocol used in RNA sequencing. Choose one from \code{c("first", "second", "unstranded")}
+#' @param verbose True or False. Show read in progress 
 #' @return A strand-specific STAR count summary table
 #' @export 
 
-getSTARcounts <- function(files, libnames, strand) {
+getSTARcounts <- function(files, libnames, strand, verbose = TRUE) {
   if(!strand %in% c("first","second","unstranded")) stop("Missing strand argument! You must specify strand-specific protocol from c('first','second','unstranded')")
   col = switch(strand, second = 4,first= 3 ,unstranded= 2)  
   ### Predefine column types
@@ -25,7 +26,9 @@ getSTARcounts <- function(files, libnames, strand) {
   out <- foreach(myfile = iter(mycntfiles, by ="row"), .combine = Combine)%do%{
     myfname <- myfile[["myfname"]]
     mylibname <-  myfile[["mylibname"]]
+    if(verbose == TRUE){
     cat("Read in",mylibname,"\n")
+    }
     readr::read_tsv(myfname, col_names = FALSE, col_types = coltypes) %>%
       dplyr::select(1, col) %>%
       dplyr::rename_at(vars(names(.)),~c("gene", mylibname))

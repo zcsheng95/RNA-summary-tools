@@ -8,7 +8,9 @@ Extract counting bases summary from PICARD output}
 getPIcounts(files, libnames)
 }
 \arguments{
-\item{rootdir}{Directory that stores all picard \code{.metrics} file}
+\item{files}{all picard \code{.metrics} file}
+
+\item{libnames}{Library Names}
 }
 \value{
 joint table for counting bases from PICARD output

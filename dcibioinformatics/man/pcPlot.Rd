@@ -5,7 +5,7 @@
 \title{pcPlot
 Create PCA plot}
 \usage{
-pcPlot(df, vars, labels, pc)
+pcPlot(df, vars, labels, pc, ...)
 }
 \arguments{
 \item{df}{input dataframe}
@@ -15,6 +15,8 @@ pcPlot(df, vars, labels, pc)
 \item{labels}{sample id}
 
 \item{pc}{principal components to compare}
+
+\item{...}{size and alpha for geom_point}
 }
 \value{
 ggplot type pca plot
