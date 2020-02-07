@@ -7,6 +7,6 @@ Will replace this package name to something more intuitive.
 To use the packages: 
  * Clone the repo
  * In terminal go to that directory and run `make all`
- * Run `R CMD INSTALL --build dcibioinformatics_0.8.tar.gz`
+ * Run `R CMD INSTALL dcibioinformatics_1.0.tar.gz`
  * Open R session, load it from where it is installed
- * You should be able to use `browseVignettes` to look at the general workflow now
+ * You should be able to find `Vigenettes` page from `Wiki` tab on the left to look at the general workflow
