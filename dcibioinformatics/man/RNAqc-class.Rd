@@ -6,11 +6,14 @@
 \alias{.RNAqc}
 \alias{RNAqc-constructor}
 \alias{RNAqc}
+\alias{normMatrix}
 \alias{addGTF}
 \title{Create new RNAqc class
 Inherit directly from DESeqDataSet class}
 \usage{
 RNAqc(counts, colData, picard = DataFrame(), anno = NULL, ...)
+
+normMatrix(obj)
 
 addGTF(obj, gtfobj, id, type)
 }
@@ -21,7 +24,7 @@ addGTF(obj, gtfobj, id, type)
 
 \item{picard}{picard summary table}
 
-\item{anno}{path to the annotation file}
+\item{anno}{path to the annotation file, first two columns must be gene id and gene symbols}
 
 \item{...}{for potential extra arguments in constructing SummarizedExperiment}
 
@@ -32,6 +35,8 @@ addGTF(obj, gtfobj, id, type)
 \item{id}{gene ids or transcript ids}
 
 \item{type}{regions from gtf to match}
+
+\item{obj}{a RNAqc object}
 }
 \description{
 Create new RNAqc class

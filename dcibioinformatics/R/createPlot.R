@@ -25,12 +25,13 @@ getLegend<-function(gplot){
 #'
 starPCA <- function(object,ntop = 1000){
   if(!all(colnames(object) == colnames(counts(object)))){stop("Sample names not in same order!")}
-  vsd <- vst(object = object)
-  rv <- matrixStats::rowVars(assay(vsd))
+  if(nrow(normAssay(object)) == 0){ncounts <- assay(vst(object = object))
+  }else ncounts <- normAssay(object) 
+  rv <- matrixStats::rowVars(ncounts)
   idx <- order(rv, decreasing = TRUE)[seq_len(min(ntop,length(rv)))]
-  pca <- prcomp(t(assay(vsd)[idx, ]))
+  pca <- prcomp(t(ncounts[idx, ]))
   percentVar <- pca$sdev^2/sum(pca$sdev^2)
-  dat_pca <- as.data.frame(colData(vsd)) %>%
+  dat_pca <- as.data.frame(colData(object)) %>%
     rownames_to_column(var = "label") %>%
     mutate(pc1 = pca$x[, 1],
            pc2 = pca$x[, 2],
@@ -151,8 +152,9 @@ plotSizefactor <- function(object, group,...){
 #' @export
 #' 
 normalCounts <- function(object, target){
-  n_rnaqc <- vst(object)
-  n_expression <- assay(n_rnaqc)
+  if(nrow(normAssay(rnaqc)) == 0){vsd <- vst(object = object) 
+                                      n_expression <- assay(vsd)
+                                      }else n_expression <- normAssay(object)
 
   if(!"gene_name" %in% colnames(mcols(object))){
       warning("Annotation is not detected!")
@@ -160,7 +162,7 @@ normalCounts <- function(object, target){
       dplyr::select(.,one_of(target)) %>%
       rownames_to_column(var = "uid")%>% 
       tidyr::gather(key = "ens_id_ver","value",-uid) -> expression
-      plotdat <- expression %>% dplyr::full_join(colData(n_rnaqc) %>% as.data.frame() %>%                                                                
+      plotdat <- expression %>% dplyr::full_join(colData(object) %>% as.data.frame() %>%                                                                
                                                  rownames_to_column(var = "uid"), by="uid") %>%
                                                  dplyr::rename(gene_name=ens_id_ver)
   }
@@ -168,9 +170,9 @@ normalCounts <- function(object, target){
       n_expression %>% t() %>% as.data.frame() %>% 
       rownames_to_column(var = "uid")%>% 
       tidyr::gather(key = "gene_id","value",-uid) -> expression
-      plotdat <- expression %>% dplyr::full_join(colData(n_rnaqc) %>% as.data.frame() %>%
+      plotdat <- expression %>% dplyr::full_join(colData(object) %>% as.data.frame() %>%
                               rownames_to_column(var = "uid"), by="uid") %>% 
-                              dplyr::left_join(mcols(n_rnaqc)%>%
+                              dplyr::left_join(mcols(object)%>%
                               as.data.frame() %>% dplyr::select(gene_id,gene_name),by= "gene_id") %>%
                               dplyr::filter(gene_name %in% target)
   }                         

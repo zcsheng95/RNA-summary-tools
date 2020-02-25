@@ -19,7 +19,9 @@ knitr::opts_chunk$set(
   fig.show = "hold",
   fig.width = 10,
   fig.height = 5,
-  fig.align = 'center'
+  fig.align = 'center',
+  tidy=TRUE, 
+  tidy.opts=list(width.cutoff=60)
 )
 ```
 
@@ -37,6 +39,7 @@ library(dcibioinformatics)
 ```
 
  **Note**
+ 
  -  You can use `printab(table)` function in this package to present latex table in your report. 
 
 ### Tables output
@@ -76,16 +79,24 @@ row.names = paste0('sample',1:5))
 ### Create RNAqc instance
 annodir <- dirname(system.file("extdata/","samples",package = "dcibioinformatics",mustWork = TRUE))
 anno <- read.table(file.path(annodir, "annotation.txt"),header = TRUE,sep ='\t',stringsAsFactors = F)
-rnaqc <- RNAqc(counts = starcounts, colData = coldata, picard = picounts,anno = anno)
+rnaqc <- RNAqc(counts = starcounts, colData = coldata, picard = picounts, anno = anno)
 show(rnaqc)
+
+#### filter zero counts
+rnaqc <- rnaqc[rowSums(DESeq2::counts(rnaqc))>0,]
+
+#### Pre-normalize the 
+rnaqc <- normMatrix(rnaqc)
 ```
 
 **NOTE**
+ 
  - The annotation above is used mainly for demo purposes. 
+ 
  - In practice, please use the code below with actual gtf file.
 
 #### Add corresponding annotation from gtf to the object.
-```{r eval = FALSE}
+```{r eval = FALSE, echo = TRUE}
 library(rtracklayer)
 gtf <- "path/to/gtf"
 gtfObj <- rtracklayer::import(gtf)
@@ -103,36 +114,36 @@ summary(rnaqc)
 * **Counting Reads(STAR)**
 
 ```{r counting reads bar plot, echo=TRUE}
-plot(rnaqc, textsize = 5)[[1]]
+plot(rnaqc, type = "STAR")
 ```
 
 * **Counting Bases(Picard)**
 
 ```{r counting bases bar plot, echo = TRUE}
 #### Without group
-plot(rnaqc,textsize = 2)[[2]]
+plot(rnaqc, type = "PICARD",textsize = 5)
 ```
 
 * **Unique Mapping rate**
 ```{r unique mapping rate, echo = TRUE}
-plot(rnaqc, group = "condition")[[3]]
+plot(rnaqc, type = "MAPR",group = "condition")
 ```
 
 ### Basic RNASeq Analsis
 
 * **PCA plot**
 ```{r pca plot, echo = T, message=F}
-createPCplot(rnaqc, var = "condition", label = TRUE)
+plot(rnaqc, type = "PCA", var = "condition", label = TRUE)
 ```
 
 * ** Only certain comparison **
 ```{r echo = T, message=F}
-createPCplot(rnaqc, var = "condition", label = TRUE, pc = "p1")
+plot(rnaqc,type = "PCA", var = "condition", label = TRUE, pc = "p1")
 ```
 
 * **Plot Size Factors**
 ```{r sizefactors ,echo = T, message=F}
-plotSizefactor(rnaqc, group = "condition")
+plot(rnaqc, type = "SizeFactor", group = "condition")
 ```
 
 
@@ -140,11 +151,12 @@ plotSizefactor(rnaqc, group = "condition")
 
 ```{r visualize normlized counts for selected gene ,message=F,echo=T}
 genelist = c("XWRnD","5hRk2","kfR6w","XGUbU")
-checkExpression(rnaqc, group = "condition", target = genelist,gridvar = "genotype")
+plot(rnaqc, type = "Expression",group = "condition", target = genelist,gridvar = "genotype")
 ```
-* **Check expression level without annotation** *
+
+* **Check expression level without annotation** 
 ```{r eval = FALSE, echo = T}
-checkExpression(rnaqc,group = "condition", target = c("gene1.1","gene2.1","gene3.1","gene4.1"),gridvar = "genotype")
+plot(rnaqc,type = "Expression",group = "condition", target = c("gene1.1","gene2.1","gene3.1","gene4.1"),gridvar = "genotype")
 ```
 
 ### To Be Continued...

@@ -14,7 +14,8 @@
 .RNAqc <- setClass("RNAqc",
                    slots  = representation(
                      picard = "DataFrame",
-                     Nmap = "matrix"
+                     Nmap = "matrix",
+                     normcounts = "matrix"
                    ),
                    contains = "DESeqDataSet",
                    prototype = prototype(assays = Assays(SimpleList(counts=matrix(0))),
@@ -28,7 +29,7 @@
 #'@param counts STAR counts matrix
 #'@param colData manifest information
 #'@param picard picard summary table
-#'@param anno path to the annotation file 
+#'@param anno path to the annotation file, first two columns must be gene id and gene symbols
 #'@param ... for potential extra arguments in constructing SummarizedExperiment
 #'@rdname RNAqc-class
 #'@name RNAqc-constructor
@@ -49,16 +50,16 @@ RNAqc <- function(counts,colData,picard = DataFrame(), anno = NULL,...){
   se <- SummarizedExperiment(assays = list(counts = rcounts),colData = colData,...)
   dds <- DESeqDataSet(se, design = ~1)
   if(!is.null(anno)){
-    colnames(anno) <- c("Geneid","GeneSymbol","Class")
-    anno %>% transmute( gene_id = Geneid, id_nover = gsub("\\.\\d+", "", Geneid),
-                        gene_name = GeneSymbol, type = Class) -> anno
+    colnames(anno)[1:2] <- c("gene_id","gene_name")
+    # anno %>% transmute( gene_id = Geneid, id_nover = gsub("\\.\\d+", "", Geneid),
+    #                     gene_name = GeneSymbol, type = Class) -> anno
     rownames(anno) <- anno$gene_id
     if(!all(row.names(anno) == row.names(rcounts))) anno <-anno[order(row.names(rcounts)),]
     mcols(dds) <- DataFrame(mcols(dds),anno[rownames(dds),])
   }
   .RNAqc(dds,picard = picard,Nmap = Nmapp)
 }
-
+ 
 
 .valid.RNAqc <- function(object){
   msg <- NULL
@@ -90,6 +91,20 @@ RNAqc <- function(counts,colData,picard = DataFrame(), anno = NULL,...){
 
 setValidity2("RNAqc", .valid.RNAqc)
 
+# Calculate normalized expression using vst() beforehand and store the results
+#' @export
+#' @rdname RNAqc-class
+#' @param obj a RNAqc object
+
+normMatrix <- function(obj){
+  out <- vst(obj)
+  normAssay(obj) <- assay(out)
+  colData(obj) <- colData(out)
+  return(obj)
+}
+
+
+
 #-- Add gtf Annotations
 #' @export
 #' @rdname RNAqc-class
@@ -112,6 +127,20 @@ addGTF <- function(obj, gtfobj,id,type){
 }
 #-- Accessor Methods
 #' Methods for RNAqc object
+#' @export
+#' @rdname RNAqc-methods
+setGeneric("normAssay", function(object,...)standardGeneric("normAssay"))
+
+
+#' @export
+#' @param object an RNAqc instance
+#' @rdname RNAqc-methods
+setMethod("normAssay",signature = "RNAqc",function(object){
+  out <- object@normcounts
+  return(out)
+})
+
+
 #' @export
 #' @rdname RNAqc-methods
 setGeneric("piData",function(object,...)standardGeneric("piData"))
@@ -174,6 +203,19 @@ setReplaceMethod("Nmap","RNAqc", function(object,value){
   return(object)
 })
 
+
+
+#' @export
+#' @rdname RNAqc-methods
+setGeneric("normAssay<-", function(object,...,value)standardGeneric("normAssay<-"))
+
+#' @export
+#' @rdname RNAqc-methods
+setReplaceMethod("normAssay","RNAqc",function(object,value){
+  object@normcounts <- value
+  validObject(object)
+  return(object)
+})
 #-- Enable Subsetting operations
 
 #' @export

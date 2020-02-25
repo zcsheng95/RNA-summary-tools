@@ -34,6 +34,7 @@ utils::globalVariables(c("object","variable",".","value","sid","Depth","Total.Ba
 
 #' plotAlignment
 #' Plot stacked barplot for bases counting proportion for STAR and PICARD
+#' @rdname plotAll
 #' @import ggplot2
 #' @import dplyr
 #' @import tidyr
@@ -44,11 +45,10 @@ utils::globalVariables(c("object","variable",".","value","sid","Depth","Total.Ba
 #' @param angle x axis angle
 #' @param ... settings for geom_point
 #' @return A list of ggplot.
-#' @export
 #' 
 
 
-plotAlignment <- function(object, group = NULL, textsize = 3,text = TRUE,angle = 60,...){
+plotSTAR <- function(object, textsize = 3,text = TRUE,angle = 60,...){
   summtable <- summary(object)
   plotdata <- summtable %>%
     rownames_to_column(var = "sid") %>%
@@ -80,8 +80,11 @@ plotAlignment <- function(object, group = NULL, textsize = 3,text = TRUE,angle =
     g_star <- g_star + geom_text(aes(label = paste0(value,"%")),  
               position = position_stack(vjust = 0.5),size = textsize)
   }
-  
-  if(!identical(piData(object),DataFrame(0))){
+  return(g_star)
+}
+
+plotPicard <- function(object, textsize = 3,text = TRUE,angle = 60,...){
+   if(!identical(piData(object),DataFrame(0))){
     counts <- piData(object)
     plotdata <- counts %>%
       as.data.frame() %>%
@@ -105,10 +108,14 @@ plotAlignment <- function(object, group = NULL, textsize = 3,text = TRUE,angle =
       g_pi <- g_pi + geom_text(aes(label = paste0(value,"%")),  
                                    position = position_stack(vjust = 0.5),size = textsize)
     }
+    return(g_pi)
   }
-  else(g_pi = "No picard outputs provided!")
-  
+  else(print("No picard outputs provided!"))
+}
+
+plotMapp <- function(object, group = NULL, textsize = 3,angle = 60,...){
   if(!is.null(group)){
+    summtable <- summary(object)
     plot_dat <- summtable %>% 
       rownames_to_column(var = "sid") %>%
       dplyr::mutate(unimap = Prop_gene + Prop_ambiguous+ Prop_noFeature)
@@ -122,14 +129,42 @@ plotAlignment <- function(object, group = NULL, textsize = 3,text = TRUE,angle =
           axis.title=element_text(size=12, face="bold"),
           plot.title=element_text(face="italic"),
           axis.text.x=element_text(hjust=1, angle = angle))
-  return(list(g_star,g_pi,g_map))
+  return(g_map)
   }
-  else return(list(g_star,g_pi))
+  else stop("Grouping variable must be provided to visualize mapping rate!")
+}
+
+
+# --- plotAll functions
+#' @param object an RNAqc instance
+#' @param type type of plot 
+#' @param ... additional settings
+#' @export
+
+plotAll <- function(object,type,...){
+  if(type == "STAR"){
+    plotSTAR(object,...)
+  }
+  else if(type == "PICARD"){
+    plotPicard(object,...)
+  }
+  else if(type == "MAPR"){
+    plotMapp(object,...)
+  }
+  else if(type == "PCA"){
+    createPCplot(object,...)
+  }
+  else if(type == "SizeFactor"){
+    plotSizefactor(object,...)
+  }
+  else if(type == "Expression"){
+    checkExpression(object,...)
+  }
 }
 
 #' @export 
-#' @rdname plotAlignment
+#' @rdname plotAll
 
 setMethod("plot",
           signature = signature(x = "RNAqc",y = "missing"),
-          definition =function(x,y,...)plotAlignment(x,...))
+          definition =function(x,y,...)plotAll(x,...))
