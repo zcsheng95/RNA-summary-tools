@@ -152,7 +152,7 @@ plotSizefactor <- function(object, group,...){
 #' @export
 #' 
 normalCounts <- function(object, target){
-  if(nrow(normAssay(rnaqc)) == 0){vsd <- vst(object = object) 
+  if(nrow(normAssay(object)) == 0){vsd <- vst(object = object) 
                                       n_expression <- assay(vsd)
                                       }else n_expression <- normAssay(object)
 

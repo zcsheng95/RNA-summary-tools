@@ -3,8 +3,4 @@
 \docType{package}
 \name{dcibioinformatics}
 \alias{dcibioinformatics}
-\alias{dcibioinformatics-package}
 \title{dcibinformatics.}
-\description{
-dcibinformatics.
-}

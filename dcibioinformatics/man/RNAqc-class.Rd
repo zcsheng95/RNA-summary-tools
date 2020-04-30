@@ -35,8 +35,6 @@ addGTF(obj, gtfobj, id, type)
 \item{id}{gene ids or transcript ids}
 
 \item{type}{regions from gtf to match}
-
-\item{obj}{a RNAqc object}
 }
 \description{
 Create new RNAqc class

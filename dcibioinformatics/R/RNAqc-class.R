@@ -49,6 +49,7 @@ RNAqc <- function(counts,colData,picard = DataFrame(), anno = NULL,...){
   rcounts = counts[-1:-4,]
   se <- SummarizedExperiment(assays = list(counts = rcounts),colData = colData,...)
   dds <- DESeqDataSet(se, design = ~1)
+  normcounts = matrix(nrow = 0, ncol = nrow(colData))
   if(!is.null(anno)){
     colnames(anno)[1:2] <- c("gene_id","gene_name")
     # anno %>% transmute( gene_id = Geneid, id_nover = gsub("\\.\\d+", "", Geneid),
@@ -57,7 +58,7 @@ RNAqc <- function(counts,colData,picard = DataFrame(), anno = NULL,...){
     if(!all(row.names(anno) == row.names(rcounts))) anno <-anno[order(row.names(rcounts)),]
     mcols(dds) <- DataFrame(mcols(dds),anno[rownames(dds),])
   }
-  .RNAqc(dds,picard = picard,Nmap = Nmapp)
+  .RNAqc(dds,picard = picard,Nmap = Nmapp,normcounts = normcounts)
 }
  
 
@@ -271,7 +272,9 @@ setReplaceMethod("[", c("RNAqc", "ANY", "ANY", "RNAqc"),function(x, i, j, ..., v
 
 setAs("DESeqDataSet", "RNAqc", function(from) {
   new("RNAqc", from, 
-      picard=DataFrame(row.names = colnames(from)), 
+      picard=DataFrame(row.names = colnames(from)),
+      Nmap = matrix(0),                                                                                                                                                          
+      normcounts = matrix(nrow=0,ncol=length(colnames(from)))  
   )
 })
 
