@@ -27,8 +27,8 @@ sanitize_text <- function(text){
 printab <- function(tab, cap=NULL, top=20, scale = 0.7, align=NULL,...){
   n <- min(top, nrow(tab))
   tab <- tab[1:n, ]
-  # pvars <- grep("pval|padj", colnames(tab), value = T)
-  # tab[,pvars] <- sapply(tab[,pvars], formatC, digits=2, format="e")
+  pvars <- grep("pval|padj", colnames(tab), value = T)
+  tab[,pvars] <- sapply(tab[,pvars], formatC, digits=2, format="e")
   print(xtable::xtable(tab, caption = cap, align=align), 
         scale = scale,
         caption.placement = "top", ...)
