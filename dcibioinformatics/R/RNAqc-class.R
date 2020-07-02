@@ -225,6 +225,16 @@ setReplaceMethod("normAssay","RNAqc",function(object,value){
 setMethod("[","RNAqc",function(x, i, j, drop = TRUE){
   picard <- piData(x)
   normcounts <- normAssay(x)
+   if (!missing(i)) {
+        if (is.character(i)) {
+            fmt <- paste0("<", class(x), ">[i,] index out of bounds: %s")
+            i <- SummarizedExperiment:::.SummarizedExperiment.charbound(
+                i, rownames(x), fmt
+            )
+        }
+        i <- as.vector(i)
+        normcounts <- normcounts[i,,drop=FALSE]
+    }
   if (!missing(j)) {
     if (is.character(j)) {
       fmt <- paste0("<", class(x), ">[,j] index out of bounds: %s")
@@ -233,8 +243,8 @@ setMethod("[","RNAqc",function(x, i, j, drop = TRUE){
       )
     }
     j <- as.vector(j)
-    picard <- picard[j,]
-    normcounts <- normcounts[,j]
+    picard <- picard[j,,drop = FALSE]
+    normcounts <- normcounts[,j, drop = FALSE]
     
   }
   out <- callNextMethod()
@@ -247,6 +257,18 @@ setMethod("[","RNAqc",function(x, i, j, drop = TRUE){
 #' @rdname RNAqc-methods
 setReplaceMethod("[", c("RNAqc", "ANY", "ANY", "RNAqc"),function(x, i, j, ..., value) {
   picard <- piData(x)
+  normcounts <- normAssay(x)
+
+  if (!missing(i)) {                                                                                                                                                                          
+        if (is.character(i)) {                                                                                                                                                                 
+            fmt <- paste0("<", class(x), ">[i,] index out of bounds: %s")                                                                                                                      
+            i <- SummarizedExperiment:::.SummarizedExperiment.charbound(                                                                                                                       
+                i, rownames(x), fmt                                                                                                                                                            
+            )                                                                                                                                                                                  
+        }                                                                                                                                                                                      
+        i <- as.vector(i)                                                                                                                                                                      
+        normcounts[i,] <- normAssay(value)                                                                                                                                                
+    }                                            
   if (!missing(j)) {
     if (is.character(j)) {
       fmt <- paste0("<", class(x), ">[,j] index out of bounds: %s")
@@ -258,7 +280,7 @@ setReplaceMethod("[", c("RNAqc", "ANY", "ANY", "RNAqc"),function(x, i, j, ..., v
     picard[j,] <- piData(value)
   }
   out <- callNextMethod()
-  BiocGenerics:::replaceSlots(out, picard = picard, check=FALSE)
+  BiocGenerics:::replaceSlots(out, picard = picard, normcounts = normcounts, check=FALSE)
 })
 
 
