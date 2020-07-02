@@ -49,7 +49,7 @@ RNAqc <- function(counts,colData,picard = DataFrame(), anno = NULL,...){
   rcounts = counts[-1:-4,]
   se <- SummarizedExperiment(assays = list(counts = rcounts),colData = colData,...)
   dds <- DESeqDataSet(se, design = ~1)
-  normcounts = matrix(nrow = 0, ncol = nrow(colData))
+  normcounts = matrix(NA_real_, nrow = nrow(rcounts), ncol = nrow(colData))
   if(!is.null(anno)){
     colnames(anno)[1:2] <- c("gene_id","gene_name")
     # anno %>% transmute( gene_id = Geneid, id_nover = gsub("\\.\\d+", "", Geneid),
