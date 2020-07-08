@@ -20,14 +20,15 @@ sanitize_text <- function(text){
 #' @param top number of rows to display, usually samples
 #' @param scale parameters used to control the scale of the table
 #' @param align Character vector of length equal to the number of columns of the resulting table, indicating the alignment of the corresponding columns. Also, "|" may be used to produce vertical lines between columns in LaTeX tables, but these are effectively ignored when considering the required length of the supplied vector. If a character vector of length one is supplied, it is split as strsplit(align, "")[[1]] before processing. Since the row names are printed in the first column, the length of align is one greater than ncol(x) if x is a data.frame. Use "l", "r", and "c" to denote left, right, and center alignment, respectively. Use "p{3cm}" etc. for a LaTeX column of the specified width. For HTML output the "p" alignment is interpreted as "l", ignoring the width request. Default depends on the class of x.
+#' @param grepcols The columns that needs to be presented in scientific mode
 #' @param ... Other visual options to adjust the latex output. See more information from package \code{xtable}
 #' @return output table in LaTex format
 #' @export
 
-printab <- function(tab, cap=NULL, top=20, scale = 0.7, align=NULL,...){
+printab <- function(tab, cap=NULL, top=20, scale = 0.7, align=NULL,grepcols ="pval|padj", ...){
   n <- min(top, nrow(tab))
   tab <- tab[1:n, ]
-  pvars <- grep("pval|padj", colnames(tab), value = T)
+  pvars <- grep(grepcols, colnames(tab), value = T)
   tab[,pvars] <- sapply(tab[,pvars], formatC, digits=2, format="e")
   print(xtable::xtable(tab, caption = cap, align=align), 
         scale = scale,

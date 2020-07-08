@@ -45,6 +45,9 @@ RNAqc <- function(counts,colData,picard = DataFrame(), anno = NULL,...){
   if(!is(counts,"matrix")){
     counts = as(counts, "matrix")
   }
+  if(nrow(picard) == 0){
+    picard = DataFrame(row.names = row.names(colData))
+  }
   Nmapp = counts[1:4,]
   rcounts = counts[-1:-4,]
   se <- SummarizedExperiment(assays = list(counts = rcounts),colData = colData,...)
@@ -296,7 +299,7 @@ setAs("DESeqDataSet", "RNAqc", function(from) {
   new("RNAqc", from, 
       picard=DataFrame(row.names = colnames(from)),
       Nmap = matrix(0),                                                                                                                                                          
-      normcounts = matrix(nrow=0,ncol=length(colnames(from)))  
+      normcounts = matrix(nrow=nrow(DESeq2::counts(from)),ncol=length(colnames(from)))  
   )
 })
 
@@ -308,4 +311,4 @@ setAs("DESeqDataSet", "RNAqc", function(from) {
 
 
 
-#### Reference: http://127.0.0.1:27386/library/SummarizedExperiment/doc/Extensions.html
+#### Reference: http://bioconductor.org/packages/devel/bioc/vignettes/SummarizedExperiment/inst/doc/Extensions.html

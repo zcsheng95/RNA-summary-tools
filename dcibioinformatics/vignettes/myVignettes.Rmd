@@ -36,6 +36,7 @@ This is the package consists of a number of utility functions developed and main
 ## Workflow Using Example Data
 ```{r setup}
 library(dcibioinformatics)
+library(DESeq2)
 ```
 
  **Note**
@@ -75,12 +76,14 @@ knitr::kable(picounts,align = 'c',caption = 'Picard Counts Summary')
 
 ```{r Create RNAqc class, echo = TRUE, eval=TRUE, results='markup'}
 coldata <- data.frame(condition = c('A','A','A','B','B'),genotype = c('W','P','W','P','W'),
-row.names = paste0('sample',1:5))
+row.names = paste0('sample',1:5), stringsAsFactors = TRUE)
 ### Create RNAqc instance
 annodir <- dirname(system.file("extdata/","samples",package = "dcibioinformatics",mustWork = TRUE))
 anno <- read.table(file.path(annodir, "annotation.txt"),header = TRUE,sep ='\t',stringsAsFactors = F)
 rnaqc <- RNAqc(counts = starcounts, colData = coldata, picard = picounts, anno = anno)
 show(rnaqc)
+#### Change design
+design(rnaqc) <- formula(~condition)
 
 #### filter zero counts
 rnaqc <- rnaqc[rowSums(DESeq2::counts(rnaqc))>0,]
@@ -135,7 +138,10 @@ plot(rnaqc, type = "MAPR",group = "condition")
 ```{r pca plot, echo = T, message=F}
 plot(rnaqc, type = "PCA", var = "condition", label = TRUE)
 ```
-
+* **PCA plot (align PC axis)**
+```{r pca plot align, echo = T, message=F}
+plot(rnaqc, type = "PCA", var = "condition", label = TRUE, allocation = 'align')
+```
 * ** Only certain comparison **
 ```{r echo = T, message=F}
 plot(rnaqc,type = "PCA", var = "condition", label = TRUE, pc = "p1")
@@ -147,23 +153,39 @@ plot(rnaqc, type = "SizeFactor", group = "condition")
 ```
 
 
-* **Check expression level for selected genes**
+* **Check expression level for selected genes (with box)**
 
-```{r visualize normlized counts for selected gene ,message=F,echo=T}
+```{r visualize normlized counts for selected gene boxplot, message=F,echo=T}
 genelist = c("XWRnD","5hRk2","kfR6w","XGUbU")
 plot(rnaqc, type = "Expression",group = "condition", target = genelist,gridvar = "genotype")
 ```
+* **Check expression level for selected genes (without box)**
 
+```{r visualize normlized counts for selected gene ,message=F,echo=T}
+plot(rnaqc, type = "Expression",group = "condition", target = genelist,gridvar = "genotype", boxplot= FALSE, alpha = 0.5, shape = 2)
+```
 * **Check expression level without annotation** 
 ```{r eval = FALSE, echo = T}
 plot(rnaqc,type = "Expression",group = "condition", target = c("gene1.1","gene2.1","gene3.1","gene4.1"),gridvar = "genotype")
+```
+
+### Run DESeq2 to get DEG results
+```{r echo = T}
+#### Use deseq2 simlulation to get significant visualization
+dds = makeExampleDESeqDataSet(n = 2000,betaSD = 0.4, interceptMean = 5)
+mcols(dds) = mcols(rnaqc)
+mcols(dds)$gene_id = gsub('\\.\\d+','',mcols(dds)$gene_id)
+#########
+dds = as(dds, "RNAqc")
+dds = DESeq2::DESeq(dds)
+plot(dds, type = "Volcano")
 ```
 
 ### To Be Continued...
 
 ### Reference
 
-- !! Any external resources / Cite here
+-  [Extending the SummarizedExperiment class](http://bioconductor.org/packages/devel/bioc/vignettes/SummarizedExperiment/inst/doc/Extensions.html)
 
 
 ```{r echo = TRUE, results='markup'}

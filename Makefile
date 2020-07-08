@@ -1,5 +1,5 @@
 mypkg=dcibioinformatics
-mypkgver=1.5
+mypkgver=1.8
 mypkggz=${mypkg}_${mypkgver}.tar.gz
 
 all: pkg check

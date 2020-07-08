@@ -7,7 +7,7 @@ This function takes the meta data and star counts
 use DESeq2 for estimating size factors before considering any experiment designs.
 It requires the column names of the input count data matrix and the row names of the metadata have the same order}
 \usage{
-createPCplot(object, var, labels = FALSE, pc = NULL, ...)
+createPCplot(object, var, labels = FALSE, pc = NULL, allocation = "flat", ...)
 }
 \arguments{
 \item{object}{an RNAqc object}
@@ -16,12 +16,14 @@ createPCplot(object, var, labels = FALSE, pc = NULL, ...)
 
 \item{labels}{show the labels or not}
 
-\item{pc}{select pcs to plot p1:p1 vs p2, p2:p1 vs p3, p3:p2 vs p3}
+\item{pc}{select pcs to plot p1:p1 vs p2, p2:p1 vs p3, p3:p3 vs p2}
+
+\item{allocation}{the user-defined allocation for 3 pc plots, 'flat' in 1 row, 'align' in 2 rows}
 
 \item{...}{size and alpha for geom_point}
 }
 \value{
-PCA plot for pc1 vs pc2, pc1 vs pc3, pc2 vs pc3
+PCA plot for pc1 vs pc2, pc1 vs pc3, pc3 vs pc2
 }
 \description{
 createPCplot

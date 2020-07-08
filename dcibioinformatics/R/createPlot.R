@@ -13,7 +13,6 @@ getLegend<-function(gplot){
 
 
 
-
 #' starPCA
 #' Function for calculating PCA
 #' @importFrom DESeq2 counts vst
@@ -21,6 +20,7 @@ getLegend<-function(gplot){
 #' @importFrom stats prcomp
 #' @param object an RNAqc object
 #' @param ntop use top genes to calculate PCA
+#' @export
 #' @return dataframe ready for pca plot
 #'
 starPCA <- function(object,ntop = 1000){
@@ -85,12 +85,13 @@ pcPlot <- function(df, vars, labels, pc,...){
 #' @param var grouping variables
 #' @param labels show the labels or not
 #' @param ... size and alpha for geom_point
-#' @param pc select pcs to plot p1:p1 vs p2, p2:p1 vs p3, p3:p2 vs p3
-#' @return PCA plot for pc1 vs pc2, pc1 vs pc3, pc2 vs pc3
+#' @param pc select pcs to plot p1:p1 vs p2, p2:p1 vs p3, p3:p3 vs p2
+#' @param allocation the user-defined allocation for 3 pc plots, 'flat' in 1 row, 'align' in 2 rows
+#' @return PCA plot for pc1 vs pc2, pc1 vs pc3, pc3 vs pc2
 #' @export
 
 
-createPCplot <- function(object, var, labels = FALSE, pc = NULL,...){
+createPCplot <- function(object, var, labels = FALSE, pc = NULL, allocation = 'flat',...){
   out <- starPCA(object)
   pcadf <- out[[1]]
   percentVar <- out[[2]]
@@ -104,22 +105,30 @@ createPCplot <- function(object, var, labels = FALSE, pc = NULL,...){
      labs(x = axis_text[1], y = axis_text[2])
   g2 <- pcPlot(df = pcadf, vars = var, labels = labels, pc = c(1,3),...) +
      labs(x = axis_text[1], y = axis_text[3])
-  g3 <- pcPlot(df = pcadf, vars = var, labels = labels, pc = c(2,3),...) +
-     labs(x = axis_text[2], y = axis_text[3])    
+  g3 <- pcPlot(df = pcadf, vars = var, labels = labels, pc = c(3,2),...) +
+     labs(x = axis_text[3], y = axis_text[2])    
   if(!is.null(pc)){
     g <- switch(pc, p1 = g1, p2 = g2, p3 = g3)
     return(g)
   }
   
   else {
-  mylegend<-getLegend(g1)
-  grid.arrange(arrangeGrob(g1 + theme(legend.position="none"),
+  leg<-getLegend(g1)
+  ps = list(g1,g3,g2)
+  if(allocation == 'flat'){
+    grid.arrange(arrangeGrob(g1 + theme(legend.position="none"),
                            g2 + theme(legend.position="none"),
                            g3 + theme(legend.position="none"),
                            nrow=1,top = "Principal Components Analysis"),
-               mylegend, nrow=2,heights=c(10, 1))
+               leg, nrow=2,heights=c(10, 1))
   }
-  
+  else if(allocation =='align'){
+    
+    ps.none <- lapply(ps, function(x) arrangeGrob(x + theme(legend.position="none")))
+    ps.none[[length(ps)+1]] <-leg
+    grid.arrange(grobs=ps.none, ncol=2, nrow=2)
+  }
+ }
 }
 
 #' plotSizefactor
@@ -189,22 +198,87 @@ normalCounts <- function(object, target){
 #' @param group grouping variable default to none
 #' @param genelist a vector of gene of interest
 #' @param gridvar variable for facet grid, default to NULL
-#' @param ... settings for geom_point
+#' @param boxplot value indicating whether show expression in box plot
+#' @param ... settings for geom_point and theme
 #' @return scatter plot of the expression
 #' @export
 #' 
-checkExpression <- function(object, group, gridvar = NULL, target,...){
+checkExpression <- function(object, group, gridvar = NULL, target, boxplot= TRUE, ...){
   plotdata <- normalCounts(object, target) 
   g<-ggplot(plotdata, aes_string(x = "gene_name", y = "value", color = group)) +
-    geom_point(..., position = position_dodge(width = 0.4)) +
+    geom_point(..., position = position_jitterdodge())+
     labs(x = "Genes", y = "Expression Level")  +
     theme_classic() +
     theme(legend.position="bottom",
           axis.text=element_text(size=10),
-          axis.title=element_text(size=12, face="bold"),
+          axis.title=element_text(size=12, hjust = 0.5, face="bold"),
           plot.title=element_text(face="italic"),
-          axis.text.x=element_text(angle=0, hjust=1),
+          axis.text.x=element_text(hjust=1,angle = 60),
           panel.border=element_rect(colour="black",fill=NA, size=0.2))
+
+  
+  if(boxplot) {g =  g + 
+    geom_boxplot(outlier.shape = NA )
+  }
+
+  
+  
   if(is.null(gridvar)) return (g)
   else return(g + facet_grid(as.formula(paste0(gridvar, "~", "."))))
+}
+
+#' Create Volcano plot for deseq2 results
+#' @importFrom DESeq2 results
+#' @param object An RNAqc after model-fitting through DESeq2
+#' @param cutoff_nlog10p Cutoff for adjusted values
+#' @param cutoff_log2fc Cutoff for log fold change
+#' @param ... settings passed to results function from DESeq2
+#' @return a volcano plot
+#' @export
+#' 
+
+plotVolcano <- function(object, cutoff_nlog10p = -log10(0.05), 
+                        cutoff_log2fc = log2(2), ...){
+  
+  res = results(object, ...) %>% data.frame %>%
+     tibble::rownames_to_column('gene_id') %>% 
+    left_join( mcols(dds) %>% data.frame, by= 'gene_id')
+    
+    dat_plt <- res %>%
+      transmute(gene_name, 
+                log2FoldChange,
+                nlog10qval = -log10(padj),
+                type = case_when(log2FoldChange > cutoff_log2fc & nlog10qval > cutoff_nlog10p ~ "Up-regulated",
+                                 log2FoldChange < -cutoff_log2fc & nlog10qval > cutoff_nlog10p ~ "Down-regulated",
+                                 TRUE ~ "Not significant")) %>%
+      na.omit()
+    
+    dat_anno <- dat_plt %>% 
+      filter(type != "Not significant")
+    
+    ggplot(dat_plt, aes(x = log2FoldChange, 
+                        y = nlog10qval, 
+                        color = type)) +
+      geom_point() +
+      geom_hline(yintercept = cutoff_nlog10p, 
+                 lty = 2, color = 'gray') +
+      geom_vline(xintercept = c(-cutoff_log2fc, cutoff_log2fc), 
+                 lty = 2, color = 'gray') +
+      labs(x = expression(log[2]~ "Fold Change"), 
+           y = expression(-log[10]~ "q-value"), 
+           title = "", color = "") +
+      scale_color_manual(values = c("Up-regulated" = "#E62A38",
+                                    "Down-regulated" = "#1E4684",
+                                    "Not significant" = "grey"),
+                         breaks = c("Up-regulated",
+                                    "Down-regulated")) +
+      theme_classic() +
+      geom_text_repel(aes(x = log2FoldChange, 
+                          y = nlog10qval, 
+                          label = gene_name), 
+                      data = dat_anno, 
+                      color = "black", 
+                      segment.color = "black", 
+                      size = 3,
+                      min.segment.length = 0) 
 }

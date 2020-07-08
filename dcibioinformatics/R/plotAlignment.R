@@ -160,6 +160,9 @@ plotAll <- function(object,type,...){
   else if(type == "Expression"){
     checkExpression(object,...)
   }
+  else if(type == 'Volcano'){
+    plotVolcano(object, ...)
+  }
 }
 
 #' @export 
