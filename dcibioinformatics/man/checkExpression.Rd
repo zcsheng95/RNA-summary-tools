@@ -5,7 +5,8 @@
 \title{Check normalized expression
 create scatter plot of normalized counts for a list of targeted genes}
 \usage{
-checkExpression(object, group, gridvar = NULL, target, boxplot = TRUE, ...)
+checkExpression(object, group, gridvar = NULL, target, boxplot = TRUE,
+  ...)
 }
 \arguments{
 \item{object}{An RNAqc instance}

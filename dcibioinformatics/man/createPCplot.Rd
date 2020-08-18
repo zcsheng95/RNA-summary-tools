@@ -7,7 +7,8 @@ This function takes the meta data and star counts
 use DESeq2 for estimating size factors before considering any experiment designs.
 It requires the column names of the input count data matrix and the row names of the metadata have the same order}
 \usage{
-createPCplot(object, var, labels = FALSE, pc = NULL, allocation = "flat", ...)
+createPCplot(object, var, labels = FALSE, pc = NULL,
+  allocation = "flat", ...)
 }
 \arguments{
 \item{object}{an RNAqc object}

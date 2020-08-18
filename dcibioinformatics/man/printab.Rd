@@ -5,15 +5,8 @@
 \title{printab
 Print summary table in LaTex format}
 \usage{
-printab(
-  tab,
-  cap = NULL,
-  top = 20,
-  scale = 0.7,
-  align = NULL,
-  grepcols = "pval|padj",
-  ...
-)
+printab(tab, cap = NULL, top = 20, scale = 0.7, align = NULL,
+  grepcols = "pval|padj", ...)
 }
 \arguments{
 \item{tab}{Summary table from getSTARcounts, getSTARsum or getPIcounts}

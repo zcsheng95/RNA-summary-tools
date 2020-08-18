@@ -25,7 +25,7 @@ getLegend<-function(gplot){
 #'
 starPCA <- function(object,ntop = 1000){
   if(!all(colnames(object) == colnames(counts(object)))){stop("Sample names not in same order!")}
-  if(nrow(normAssay(object)) == 0){ncounts <- assay(vst(object = object))
+  if(sum(is.na(normAssay(object))) != 0){ncounts <- assay(vst(object = object))
   }else ncounts <- normAssay(object) 
   rv <- matrixStats::rowVars(ncounts)
   idx <- order(rv, decreasing = TRUE)[seq_len(min(ntop,length(rv)))]
@@ -161,7 +161,7 @@ plotSizefactor <- function(object, group,...){
 #' @export
 #' 
 normalCounts <- function(object, target){
-  if(nrow(normAssay(object)) == 0){vsd <- vst(object = object) 
+  if(sum(is.na(normAssay(object))) != 0){vsd <- vst(object = object) 
                                       n_expression <- assay(vsd)
                                       }else n_expression <- normAssay(object)
 

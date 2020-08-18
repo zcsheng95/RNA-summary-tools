@@ -4,12 +4,8 @@
 \alias{plotVolcano}
 \title{Create Volcano plot for deseq2 results}
 \usage{
-plotVolcano(
-  object,
-  cutoff_nlog10p = -log10(0.05),
-  cutoff_log2fc = log2(2),
-  ...
-)
+plotVolcano(object, cutoff_nlog10p = -log10(0.05),
+  cutoff_log2fc = log2(2), ...)
 }
 \arguments{
 \item{object}{An RNAqc after model-fitting through DESeq2}
