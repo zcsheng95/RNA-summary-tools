@@ -9,4 +9,6 @@ To use the packages:
  * In terminal go to that directory and run `make all`
  * Run `R CMD INSTALL dcibioinformatics_{$version}.tar.gz`
  * Open R session, load it from where it is installed
- * You should be able to find `Vigenettes` page from `Wiki` tab on the left to look at the general workflow
+ 
+ 
+ The package is designed to capture output from STAR aligner to make it easier for downstream analysis.
